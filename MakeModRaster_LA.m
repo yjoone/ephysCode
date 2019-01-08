@@ -1,4 +1,4 @@
-function [modStruct,rasterWindowTimesSamplesStruct,flow,fhigh] = MakeModRaster(dam,startLastRangeSamples,chanNameCellPhaseFreq,chanNameCellAmpFreq,dataAcq,varargin)
+function [modStruct,rasterWindowTimesSamplesStruct,flow,fhigh] = MakeModRaster_LA(dam,startLastRangeSamples,chanNameCellPhaseFreq,chanNameCellAmpFreq,dataAcq,varargin)
 % Create a raster of modulation index (MI) values
 %
 % Key Note: all sample indices referenced below are matched to neural data

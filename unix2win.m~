@@ -1,0 +1,19 @@
+function output = unix2win(filepath)
+
+% this function takes in an unix filepath and converts it to same address
+% in windows
+
+fileparts = strsplit(filepath,'/');
+
+[vm,vi] = ismember('Volumes',fileparts);
+[rm,ri] = ismember('ecas-research',fileparts);
+
+if vm % if Volume string exist, replace it with empty string
+    fileparts{vi} = '';
+end
+
+if rm
+    fileparts{ri} = 'R:';
+end
+
+output = fullfile(fileparts);

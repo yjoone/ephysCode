@@ -21,6 +21,7 @@ p_sniffing = anova1(data);
 title('Partner vs Stranger bedding sniffing time')
 ylabel('time (s)')
 xlabel('Partner (1)     Stragner(2)');
+set(gca,'fontsize',15)
 savefig('SniffingTimeAbsolute.fig')
 print(gcf,'SniffingTimeAbsolute.png','-dpng');
 close(gcf);
@@ -35,9 +36,11 @@ close(gcf);
 dataMean = mean(data);
 dataSE = std(data)./sqrt(length(data));
 figure;
+set(gca,'fontsize',15)
 hold on
 bar(1:2,dataMean)
-errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+% errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+errorbar(1:2,dataMean,dataSE,'.','linewidth',3)
 
 ylabel('time (s)')
 xlabel('Partner (1)     Stragner(2)');
@@ -52,6 +55,7 @@ p_side = anova1(data);
 title('Partner vs Stranger side time')
 ylabel('time (s)')
 xlabel('Partner (1)     Stragner(2)');
+set(gca,'fontsize',15)
 savefig('SideTimeAbsolute.fig')
 print(gcf,'SideTimeAbsolute.png','-dpng');
 close(gcf);
@@ -66,9 +70,11 @@ close(gcf);
 dataMean = mean(data);
 dataSE = std(data)./sqrt(length(data));
 figure;
+set(gca,'fontsize',15)
 hold on
 bar(1:2,dataMean)
-errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+% errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+errorbar(1:2,dataMean,dataSE,'.','linewidth',3)
 
 ylabel('time (s)')
 xlabel('Partner (1)     Stragner(2)');
@@ -84,6 +90,7 @@ p_portion = anova1(data);
 title('Partner vs Stranger portion of sniffing')
 ylabel('portion')
 xlabel('Partner (1)     Stragner(2)');
+set(gca,'fontsize',15)
 savefig('PortionSniffing.fig')
 print(gcf,'PortionSniffing.png','-dpng');
 close(gcf);
@@ -98,9 +105,12 @@ close(gcf);
 dataMean = mean(data);
 dataSE = std(data)./sqrt(length(data));
 figure;
+set(gca,'fontsize',15)
 hold on
 bar(1:2,dataMean)
-errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+% errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+errorbar(1:2,dataMean,dataSE,'.','linewidth',3)
+
 
 ylabel('portion')
 xlabel('Partner (1)     Stragner(2)');
@@ -116,6 +126,7 @@ p_sniffPortion = anova1(data);
 title('Partner vs Stranger portion of only sniffing')
 ylabel('portion')
 xlabel('Partner (1)     Stragner(2)');
+set(gca,'fontsize',15)
 savefig('PortionOnlySniffing.fig')
 print(gcf,'PortionOnlySniffing.png','-dpng');
 close(gcf);
@@ -131,9 +142,12 @@ close(gcf);
 dataMean = mean(data);
 dataSE = std(data)./sqrt(length(data));
 figure;
+set(gca,'fontsize',15)
 hold on
 bar(1:2,dataMean)
-errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+% errorbar(1:2,dataMean,dataSE,'.','capsize',12,'linewidth',3)
+errorbar(1:2,dataMean,dataSE,'.','linewidth',3)
+
 
 ylabel('portion')
 xlabel('Partner (1)     Stragner(2)');

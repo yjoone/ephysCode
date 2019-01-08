@@ -33,6 +33,7 @@ headerseperator = [
 fname = fullfilepath;
 fid = fopen(fname,'r',pars.endian);
 datamatrix = fread(fid,pars.maxread,pars.precision); 
+fclose(fid)
 
 lochstart = regexp(char(datamatrix'),pars.headerstart); 
 lochstart = [lochstart(2:end),numel(datamatrix)+1]; %header start locations

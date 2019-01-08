@@ -1,4 +1,4 @@
-function [coherenceStruct,S1Struct,S2Struct,rasterWindowTimesSamplesStruct,fSpect] = MakeCoherenceRaster(dam,startLastRangeSamples,chanNameCell1,chanNameCell2,dataAcq,varargin)
+function [coherenceStruct,S1Struct,S2Struct,rasterWindowTimesSamplesStruct,fSpectOut] = MakeCoherenceRaster(dam,startLastRangeSamples,chanNameCell1,chanNameCell2,dataAcq,varargin)
 
 specifyBehavs = true; 
 windowType = 'overlap'; %'overlap' 'noneOverlap'
@@ -8,6 +8,7 @@ windowTargetSizeSeconds = 1;
 W = 2; % Hz
 windowStepMultiplierTargetSize = 1/10;
 keepFrequenciesRange = [3 100]; % Hz; monotonic; inclusive
+keepFrequenciesNL = [5,48,80];
 PerformTransform = 'on';
 
 assign(varargin{:});
@@ -152,32 +153,50 @@ for i=1:numel(chanNameCell1);
     
     dataChanName1Test = dataChanName1(rasterWindowTimesSamples(1,1):rasterWindowTimesSamples(1,2))'; % column form for Chronux
     dataChanName2Test = dataChanName2(rasterWindowTimesSamples(1,1):rasterWindowTimesSamples(1,2))'; % column form for Chronux
-    [~,~,~,~,~,fSpect,~,~,~]=coherencyc(dataChanName1Test,dataChanName2Test,params);
+    [CSpect,~,~,S1Spect,S2Spect,fSpect,~,~,~]=coherencyc(dataChanName1Test,dataChanName2Test,params);
     
-    coherenceValsChans = zeros(size(rasterWindowTimesSamples,1),numel(fSpect)); % row is time point, columns correspond to frequencies to keep
-    S1ValsChans = zeros(size(rasterWindowTimesSamples,1),numel(fSpect)); % row is time point, columns correspond to frequencies to keep
-    S2ValsChans = zeros(size(rasterWindowTimesSamples,1),numel(fSpect)); % row is time point, columns correspond to frequencies to keep
+    if ~isequal(numel(fSpect),numel(CSpect)) || ~isequal(numel(fSpect),numel(S1Spect)) || ~isequal(numel(fSpect),numel(S2Spect))
+        error('discrepant numel between f and one or more of C, S1, S2')
+    end
+    switch dataAcq
+        case 'NL'
+            fIDs = [];
+            for k=1:numel(keepFrequenciesNL)
+                fIDs = [fIDs find(fSpect==keepFrequenciesNL(k))];
+            end
+            fSpectOut = fSpect(fIDs);
+            if ~isequal(fSpectOut,keepFrequenciesNL)
+                error('discrepancy fSpectOut and keepFrequenciesNL')
+            end
+        case 'TDT'
+            fIDs = 1:numel(fSpect);
+            fSpectOut = fSpect;      
+    end
+    coherenceValsChans = zeros(size(rasterWindowTimesSamples,1),numel(fIDs)); % row is time point, columns correspond to frequencies to keep
+    S1ValsChans = zeros(size(rasterWindowTimesSamples,1),numel(fIDs)); % row is time point, columns correspond to frequencies to keep
+    S2ValsChans = zeros(size(rasterWindowTimesSamples,1),numel(fIDs)); % row is time point, columns correspond to frequencies to keep
     for j=1:size(rasterWindowTimesSamples,1)
         dataChanName1Win = dataChanName1(rasterWindowTimesSamples(j,1):rasterWindowTimesSamples(j,2))'; % column form for Chronux
         dataChanName2Win = dataChanName2(rasterWindowTimesSamples(j,1):rasterWindowTimesSamples(j,2))'; % column form for Chronux
         if isempty(find(dataChanName1Win<=clipRange(1),1)) &&  isempty(find(dataChanName1Win>=clipRange(2),1)) && isempty(find(dataChanName2Win<=clipRange(1),1)) &&  isempty(find(dataChanName2Win>=clipRange(2),1))
             [C,phi,S12,S1,S2,f,confC,phistd,Cerr]=coherencyc(dataChanName1Win,dataChanName2Win,params);
+                            
             if strcmp(PerformTransform,'on')
-                CValsfIDs = atanh(C); % Fisher transform; note no bias correction here 
-                S1ValsfIDs = 10*(log10(S1)); % log transformed X10 bel-->decibel; note no bias correction here 
-                S2ValsfIDs = 10*(log10(S2)); % log transformed X10 bel-->decibel; note no bias correction here 
+                CValsfIDs = atanh(C(fIDs)); % Fisher transform; note no bias correction here 
+                S1ValsfIDs = 10*(log10(S1(fIDs))); % log transformed X10 bel-->decibel; note no bias correction here 
+                S2ValsfIDs = 10*(log10(S2(fIDs))); % log transformed X10 bel-->decibel; note no bias correction here 
             else
-                CValsfIDs = C;
-                S1ValsfIDs = S1;
-                S2ValsfIDs = S2;
+                CValsfIDs = C(fIDs);
+                S1ValsfIDs = S1(fIDs);
+                S2ValsfIDs = S2(fIDs);
             end
             coherenceValsChans(j,:) = CValsfIDs;
             S1ValsChans(j,:) = S1ValsfIDs;
             S2ValsChans(j,:) = S2ValsfIDs;
         else
-            coherenceValsChans(j,:) = NaN*ones(1,numel(fSpect)); % insert NaNs for windows with clipping
-            S1ValsChans(j,:) = NaN*ones(1,numel(fSpect));
-            S2ValsChans(j,:) = NaN*ones(1,numel(fSpect));
+            coherenceValsChans(j,:) = NaN*ones(1,numel(fIDs)); % insert NaNs for windows with clipping
+            S1ValsChans(j,:) = NaN*ones(1,numel(fIDs));
+            S2ValsChans(j,:) = NaN*ones(1,numel(fIDs));
         end
     end
     

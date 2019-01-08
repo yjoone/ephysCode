@@ -43,11 +43,17 @@ for i = 2:len %skip the header row
             Behaviors(i,1) = 3;
         case 'Right Side'
             Behaviors(i,1) = 4;
-        case 'Self Grooming'
+        case 'Self Grooming' 
             Behaviors(i,1) = 5;
-        case 'Huddling'
+        case 'self grooming'
+            Behaviors(i,1) = 5;
+        case 'Huddling' 
             Behaviors(i,1) = 6;
-        case 'Mounting'
+        case 'huddling'
+            Behaviors(i,1) = 6;
+        case 'Mounting' 
+            Behaviors(i,1) = 7;
+        case 'mounting'
             Behaviors(i,1) = 7;
     end
 end
