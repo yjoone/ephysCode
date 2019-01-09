@@ -1,4 +1,4 @@
-function [powerdata] = runPowerSpectraAnalysis(damStruct,Chan,outfilepath,varargin)
+function [powerdata] = runPowerSpectraAnalysis(damStruct,Chan,behaviors,outfilepath,varargin)
 
 % this function takes in an organized dam struct, after step 5 of the
 % Samplepipeline.m. It computes the power spectral analysis and saves the
@@ -9,7 +9,7 @@ function [powerdata] = runPowerSpectraAnalysis(damStruct,Chan,outfilepath,vararg
 
 %% defaults
 % behaviors = 'mountingMale';
-behaviors = 'other';
+% behaviors = 'other';
 nfft = 1024; 
 %This is to ensure the power spectrum output has same length across
 %different epoches of behavior

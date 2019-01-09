@@ -10,12 +10,15 @@ if nargin < 2
     outvidname = inputdlg('Enter the name of output video file');
 end
 
+resizeratio = .3;
+
 %% get the directory file info before creating the output video
 
 dd = dir(vidpath);
 
 %% create an output video object
-vout = VideoWriter(fullfile(vidpath,outvidname),'Motion JPEG AVI');
+vout = VideoWriter(fullfile(vidpath,outvidname),'motion JPEG 2000');
+set(vout,'CompressionRatio',10)
 open(vout)
 %% grab all the file info in the vidpath folder
 
@@ -23,9 +26,9 @@ for i = 3:numel(dd)
     filename = dd(i).name;
     vo = VideoReader(fullfile(vidpath,filename));
     while hasFrame(vo)
-        writeVideo(vout,readFrame(vo));
+        writeVideo(vout,imresize(readFrame(vo),resizeratio));
     end
-    print(['Finished writing ' num2str(i) ' video']);
+    display(['Finished writing ' num2str(i) ' video']);
 end
 
 close(vout)

@@ -1,7 +1,7 @@
 % sample script based on PV20130829B_analysis_Joe_example.m from Liz Ann
 
 %% hard code
-durSecondsAnalysisWindow = 5; %seconds
+durSecondsAnalysisWindow = 2; %seconds
 
 %% step 1: set appropriate paths
 initializePath
@@ -20,6 +20,9 @@ else
     mdb = xlsreadMasterDBVole(databasepath);
 end
 
+% sync detail filename
+syncdetailfilename = 'SyncDetail.xlsx';
+
 Chronux_startup
 
 %% step 2: get neural and behavioral data
@@ -32,8 +35,8 @@ recdNeil_BLA_DS = recd_DC(3);
 samplerate = recdNeil_Nacc_DS.Samplerate;
 
 %% step 3: put behavior names? - check if it's necessary or can be obtained from xls file.
-behavNames = {'mountingMale','huddlingFemale','huddlingMale','partnergroomingFemale','partnergroomingMale','sniffingFemale','sniffingMale','selfgroomingFemale','bitingFemale','approachFemale','approachMale','rearingFemale'};
-
+% behavNames = {'mountingMale','huddlingFemale','huddlingMale','partnergroomingFemale','partnergroomingMale','sniffingFemale','sniffingMale','selfgroomingFemale','bitingFemale','approachFemale','approachMale','rearingFemale'};
+behavNames = {'mountingMale'};
 %% step 4: get raw data
 
 damNeil_NAcc_DS = loadrecd_mdb_drafting20130214(recdNeil_Nacc_DS,mdb);
@@ -41,17 +44,29 @@ damNeil_PFC_DS = loadrecd_mdb_drafting20130214(recdNeil_PFC_DS,mdb);
 damNeil_BLA_DS = loadrecd_mdb_drafting20130214(recdNeil_BLA_DS,mdb);
 
 
-threshStartOffsetSecondsStruct = struct('mountingMale',1,'huddlingFemale',5,'huddlingMale',5,'partnergroomingFemale',1,'partnergroomingMale',1,'sniffingFemale',1,'sniffingMale',1,'selfgroomingFemale',1,'bitingFemale',1,'approachFemale',1,'approachMale',1,'rearingFemale',1);
-threshOverlapSecondsStruct = struct('mountingMale',durSecondsAnalysisWindow,'huddlingFemale',durSecondsAnalysisWindow,'huddlingMale',durSecondsAnalysisWindow,'partnergroomingFemale',durSecondsAnalysisWindow,'partnergroomingMale',durSecondsAnalysisWindow,'sniffingFemale',durSecondsAnalysisWindow,'sniffingMale',durSecondsAnalysisWindow,'selfgroomingFemale',durSecondsAnalysisWindow,'bitingFemale',durSecondsAnalysisWindow,'approachFemale',durSecondsAnalysisWindow,'approachMale',durSecondsAnalysisWindow,'rearingFemale',durSecondsAnalysisWindow);
+threshStartOffsetSecondsStruct = struct('mountingMale',1,'huddlingFemale',5,...
+    'huddlingMale',5,'partnergroomingFemale',1,'partnergroomingMale',1,...
+    'sniffingFemale',1,'sniffingMale',1,'selfgroomingFemale',1,'bitingFemale',1,...
+    'approachFemale',1,'approachMale',1,'rearingFemale',1);
+threshOverlapSecondsStruct = struct('mountingMale',durSecondsAnalysisWindow,...
+    'huddlingFemale',durSecondsAnalysisWindow,'huddlingMale',durSecondsAnalysisWindow,...
+    'partnergroomingFemale',durSecondsAnalysisWindow,'partnergroomingMale',durSecondsAnalysisWindow,...
+    'sniffingFemale',durSecondsAnalysisWindow,'sniffingMale',durSecondsAnalysisWindow,...
+    'selfgroomingFemale',durSecondsAnalysisWindow,'bitingFemale',durSecondsAnalysisWindow,...
+    'approachFemale',durSecondsAnalysisWindow,'approachMale',durSecondsAnalysisWindow,...
+    'rearingFemale',durSecondsAnalysisWindow);
 threshOverlapVals = [];
 for z = 1:numel(behavNames)
     val = threshOverlapSecondsStruct.(behavNames{z});
     threshOverlapVals = [threshOverlapVals val];
 end
 
-behavIntersect_NAcc = IntersectDamsBehavTwoScorersNL(damNeil_NAcc_DS.trials.behavindices,damNeil_NAcc_DS.trials.behavindices,threshStartOffsetSecondsStruct,threshOverlapSecondsStruct,samplerate);
-behavIntersect_PFC = IntersectDamsBehavTwoScorersNL(damNeil_PFC_DS.trials.behavindices,damNeil_PFC_DS.trials.behavindices,threshStartOffsetSecondsStruct,threshOverlapSecondsStruct,samplerate);
-behavIntersect_BLA = IntersectDamsBehavTwoScorersNL(damNeil_BLA_DS.trials.behavindices,damNeil_BLA_DS.trials.behavindices,threshStartOffsetSecondsStruct,threshOverlapSecondsStruct,samplerate);
+behavIntersect_NAcc = IntersectDamsBehavTwoScorersNL(damNeil_NAcc_DS.trials.behavindices,...
+    damNeil_NAcc_DS.trials.behavindices,threshStartOffsetSecondsStruct,threshOverlapSecondsStruct,samplerate);
+behavIntersect_PFC = IntersectDamsBehavTwoScorersNL(damNeil_PFC_DS.trials.behavindices,...
+    damNeil_PFC_DS.trials.behavindices,threshStartOffsetSecondsStruct,threshOverlapSecondsStruct,samplerate);
+behavIntersect_BLA = IntersectDamsBehavTwoScorersNL(damNeil_BLA_DS.trials.behavindices,...
+    damNeil_BLA_DS.trials.behavindices,threshStartOffsetSecondsStruct,threshOverlapSecondsStruct,samplerate);
 
 damNeil_NAcc_intersect = damNeil_NAcc_DS;
 damNeil_NAcc_intersect.trials.behavindices = behavIntersect_NAcc; % replace original behavior times with intersection behavior times
@@ -72,7 +87,8 @@ CheckAcrossChannels({damNeil_NAcc},{damNeil_PFC})
 %% specify epoch duration
 epochDur = durSecondsAnalysisWindow; %seconds
 
-if ~isempty(find(epochDur<threshOverlapVals,1)) && isequal(damNeil_NAcc.trials.behavindices,damNeil_NAcc_intersect.trials.behavindices)
+if ~isempty(find(epochDur<threshOverlapVals,1)) && isequal(damNeil_NAcc.trials.behavindices,...
+        damNeil_NAcc_intersect.trials.behavindices)
     error('desired epoch duration less than minimum size of data epochs')
 end
 
@@ -81,14 +97,26 @@ for i=1:numel(behavNames)
     TStruct.(behavNames{i})=epochDur;
 end
 
-%% Specify experiment range in samples
 
-% habitRange = [568946 1298927]; % ~60.9 min habituation
-cohabRange = [1313167 5653055];% ~362.0 min cohabitation
-% rehabitRange = [5729757 5953810];% ~18.7 min rehabituation
-% foodRewardRange = [5954935 6668314];% ~59.5 min food reward
-% range(1) is start of session & range(2) is last point of session
-% (inclusive)
+%% Specify experiment range in samples. load in synchronization detail information from the excel file
+try
+    [num,txt] = xlsread(syncdetailfilename);
+    for i = 2:length(txt) % start from second row to skip headers
+        assign(txt{i,1},num(i-1,1)); % num variable does not have header so readjust
+    end
+catch
+    disp('make sure there is the syncdetail.xlsx file in the experiment file path')
+    keyboard
+end
+
+cohabRange = [NLstartcohab NLendcohab];
+%
+% % habitRange = [568946 1298927]; % ~60.9 min habituation
+% cohabRange = [1313167 5653055];% ~362.0 min cohabitation
+% % rehabitRange = [5729757 5953810];% ~18.7 min rehabituation
+% % foodRewardRange = [5954935 6668314];% ~59.5 min food reward
+% % range(1) is start of session & range(2) is last point of session
+% % (inclusive)
 
 sixHrCohabLastPoint = cohabRange(1)+round(6*3600*samplerate)-1;
 ExptRangeSamples_Neil = [cohabRange(1) sixHrCohabLastPoint];
@@ -106,11 +134,17 @@ end
 % [5954929 6668797-1]; % food rew. - use last arduino syn as end
 
 %% Create chronux data structures
-[chronuxDataStruct_Neil_NAcc,epochIndices_Neil_NAcc,sampleIndices_Neil_NAcc,T_Neil_NAcc] = ConvertIndicesToChronuxFormat(damNeil_NAcc.trials.behavindices,damNeil_NAcc.trials.signal,TStruct,samplerate,'regionNeuralData','between','boundsSamples',ExptRangeSamples_Neil);
-[chronuxDataStruct_Neil_PFC,epochIndices_Neil_PFC,sampleIndices_Neil_PFC,T_Neil_PFC] = ConvertIndicesToChronuxFormat(damNeil_PFC.trials.behavindices,damNeil_PFC.trials.signal,TStruct,samplerate,'regionNeuralData','between','boundsSamples',ExptRangeSamples_Neil); %behavindices and samplerate should be same
+[chronuxDataStruct_Neil_NAcc,epochIndices_Neil_NAcc,sampleIndices_Neil_NAcc,T_Neil_NAcc] = ...
+    ConvertIndicesToChronuxFormat(damNeil_NAcc.trials.behavindices,damNeil_NAcc.trials.signal,...
+    TStruct,samplerate,'regionNeuralData','between','boundsSamples',ExptRangeSamples_Neil);
+[chronuxDataStruct_Neil_PFC,epochIndices_Neil_PFC,sampleIndices_Neil_PFC,T_Neil_PFC] = ...
+    ConvertIndicesToChronuxFormat(damNeil_PFC.trials.behavindices,damNeil_PFC.trials.signal,...
+    TStruct,samplerate,'regionNeuralData','between','boundsSamples',ExptRangeSamples_Neil); %behavindices and samplerate should be same
 
 %% Match epochs across channels for given animal
-[chronuxDataStruct_Neil_NAcc_Matched, chronuxDataStruct_Neil_PFC_Matched, sampleIndices_Neil_Matched] = MatchDataAcrossEpochsNL(chronuxDataStruct_Neil_NAcc,chronuxDataStruct_Nei_PFC,epochIndices_Neil_NAcc,epochIndices_Neil_PFC,sampleIndices_Neil_NAcc);
+[chronuxDataStruct_Neil_NAcc_Matched, chronuxDataStruct_Neil_PFC_Matched, sampleIndices_Neil_Matched] = ...
+    MatchDataAcrossEpochsNL(chronuxDataStruct_Neil_NAcc,chronuxDataStruct_Neil_PFC,...
+    epochIndices_Neil_NAcc,epochIndices_Neil_PFC,sampleIndices_Neil_NAcc);
 
 %% Check TStruct is same across channels for given animal
 CheckAcrossChannels({T_Neil_NAcc,T_Neil_NAcc,T_Neil_NAcc},{T_Neil_PFC,T_Neil_PFC,T_Neil_PFC},'compareType','T')
@@ -120,7 +154,12 @@ Wtarget = 2;
 
 % Each animal
 TChronuxCohgramVal = round(samplerate*1)/samplerate;
-TToUse = struct('mountingMale',TChronuxCohgramVal,'huddlingFemale',TChronuxCohgramVal,'huddlingMale',TChronuxCohgramVal,'partnergroomingFemale',TChronuxCohgramVal,'partnergroomingMale',TChronuxCohgramVal,'sniffingFemale',TChronuxCohgramVal,'sniffingMale',TChronuxCohgramVal,'selfgroomingFemale',TChronuxCohgramVal,'bitingFemale',TChronuxCohgramVal,'approachFemale',TChronuxCohgramVal,'approachMale',TChronuxCohgramVal,'rearingFemale',TChronuxCohgramVal);
+TToUse = struct('mountingMale',TChronuxCohgramVal,'huddlingFemale',TChronuxCohgramVal,...
+    'huddlingMale',TChronuxCohgramVal,'partnergroomingFemale',TChronuxCohgramVal,...
+    'partnergroomingMale',TChronuxCohgramVal,'sniffingFemale',TChronuxCohgramVal,...
+    'sniffingMale',TChronuxCohgramVal,'selfgroomingFemale',TChronuxCohgramVal,...
+    'bitingFemale',TChronuxCohgramVal,'approachFemale',TChronuxCohgramVal,...
+    'approachMale',TChronuxCohgramVal,'rearingFemale',TChronuxCohgramVal);
 padToUse = struct;
 for i=1:numel(behavNames)
     TToUseBehav=TToUse.(behavNames{i});
@@ -138,17 +177,17 @@ chronuxDataStructure2Use = chronuxDataStruct_Neil_PFC_Matched;
 % These correspond to each of behavNames
 % pad to 32768 (2^15)
 paramsmountingMale = struct('pad',padToUse.mountingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramshuddlingFemale = struct('pad',padToUse.huddlingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramshuddlingMale = struct('pad',padToUse.huddlingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramspartnergroomingFemale = struct('pad',padToUse.partnergroomingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramspartnergroomingMale = struct('pad',padToUse.partnergroomingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramssniffingFemale = struct('pad',padToUse.sniffingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramssniffingMale = struct('pad',padToUse.sniffingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramsselfgroomingFemale = struct('pad',padToUse.selfgroomingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramsbitingFemale = struct('pad',padToUse.bitingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramsapproachFemale = struct('pad',padToUse.approachFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramsapproachMale = struct('pad',padToUse.approachMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-paramsrearingFemale = struct('pad',padToUse.rearingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramshuddlingFemale = struct('pad',padToUse.huddlingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramshuddlingMale = struct('pad',padToUse.huddlingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramspartnergroomingFemale = struct('pad',padToUse.partnergroomingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramspartnergroomingMale = struct('pad',padToUse.partnergroomingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramssniffingFemale = struct('pad',padToUse.sniffingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramssniffingMale = struct('pad',padToUse.sniffingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramsselfgroomingFemale = struct('pad',padToUse.selfgroomingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramsbitingFemale = struct('pad',padToUse.bitingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramsapproachFemale = struct('pad',padToUse.approachFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramsapproachMale = struct('pad',padToUse.approachMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+% paramsrearingFemale = struct('pad',padToUse.rearingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 
 paramsStruct = struct;
 WStruct = struct;
@@ -318,28 +357,28 @@ fForTimeline = rangeF(IDmax);
 
 %%  Step 16: Establish set of Chronux params to use in "timeline" coherence analysis (Depends on what behaviors interested in -- see below)
 
-% Interested in mating, huddling, self-grooming behaviors for now; making sure that
-% params are consistent across those
-if isequal(paramsStruct.mountingMale,paramsStruct.huddlingFemale) && isequal(paramsStruct.mountingMale,paramsStruct.selfgroomingFemale)
-    params = paramsStruct.mountingMale;
-else
-    error('params not same between behaviors')
-end
+% % Interested in mating, huddling, self-grooming behaviors for now; making sure that
+% % params are consistent across those
+% if isequal(paramsStruct.mountingMale,paramsStruct.huddlingFemale) && isequal(paramsStruct.mountingMale,paramsStruct.selfgroomingFemale)
+     params = paramsStruct.mountingMale;
+% else
+%     error('params not same between behaviors')
+% end
 
 movingwin_mountingMale = movingwinStruct.mountingMale;
-movingwin_selfgroomingFemale = movingwinStruct.selfgroomingFemale;
-movingwin_huddlingFemale = movingwinStruct.huddlingFemale;
-if isequal(movingwin_mountingMale(1),movingwin_selfgroomingFemale(1)) && isequal(movingwin_mountingMale(1),movingwin_huddlingFemale(1))
-    tTimelineWindowSeconds = movingwin_mountingMale(1);
-else
-    error('time interval not same between behaviors')
-end
-
-if isequal(movingwin_mountingMale(2),movingwin_selfgroomingFemale(2)) && isequal(movingwin_mountingMale(2),movingwin_huddlingFemale(2))
-    tstepSeconds = movingwin_mountingMale(2);
-else
-    error('time step not same between behaviors')
-end
+% movingwin_selfgroomingFemale = movingwinStruct.selfgroomingFemale;
+% movingwin_huddlingFemale = movingwinStruct.huddlingFemale;
+% if isequal(movingwin_mountingMale(1),movingwin_selfgroomingFemale(1)) && isequal(movingwin_mountingMale(1),movingwin_huddlingFemale(1))
+     tTimelineWindowSeconds = movingwin_mountingMale(1);
+% else
+%     error('time interval not same between behaviors')
+% end
+% 
+% if isequal(movingwin_mountingMale(2),movingwin_selfgroomingFemale(2)) && isequal(movingwin_mountingMale(2),movingwin_huddlingFemale(2))
+     tstepSeconds = movingwin_mountingMale(2);
+% else
+%     error('time step not same between behaviors')
+% end
 
 
 %% Step 17: Compute coherence over 1 second intervals throughout experiment
