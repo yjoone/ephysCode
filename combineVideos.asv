@@ -10,15 +10,16 @@ if nargin < 2
     outvidname = inputdlg('Enter the name of output video file');
 end
 
-resizeratio = .7;
+resizeratio = .3;
 
 %% get the directory file info before creating the output video
 
 dd = dir(vidpath);
 
 %% create an output video object
-vout = VideoWriter(fullfile(vidpath,outvidname),'MPEG-4');
-% set(vout,'CompressionRatio',20)
+vout = VideoWriter(fullfile(vidpath,outvidname));
+vout.VideoCompressionMethod = 'H.264';
+set(vout,'CompressionRatio',10)
 open(vout)
 %% grab all the file info in the vidpath folder
 
