@@ -1,21 +1,25 @@
-function plotSpectrogram(x_ds,behaviorStruct,animalID,filePath,saveFig)
+function plotSpectrogram(damStruct,animalID,varargin)
 
 % x_ds is downsampled data assuming 48 fold downsample
 % behaviorstruct is output from compileBehavior
 % animalID is the data name
 
-if nargin < 4
-    filePath = 'R:\LiuLab\People\Jim\OTmanipEphysExpt\spectogramAnalysis';
-    saveFig = 'on';
-end
+% updated on 011018 JK to run the data from neurologger. Only change was
+% the sampling rate.
 
-%%%%%% HARD CODED SAMPLING RATE %%%%%%%
-fs = 24414/48;
+
+%%%%%% HARD CODED VALUES%%%%%%%%%%%%%%%
+% fs = 24414/48;
+fs = 199.8049;
+window = 512;
+overlap = 256;
+saveFig = 'on';
+clim = [5 30]; 
+outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\spectogramAnalysis';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-window = 1000;
-overlap = 500;
-
+assign(varargin{:})
+x_ds = damStruct.trials.signal;
 
 [spec,f,t] = spectrogram(x_ds,window,overlap,[],fs);
 
@@ -24,7 +28,8 @@ fh = figure;
 h = imagesc(t, f, spec_dB);
 
 axis('xy');
-caxis(quantile(spec_dB(:),[.02,.98]));
+caxis(clim)
+% caxis(quantile(spec_dB(:),[.02,.98]));
 set(gca,'ylim',[0 100]);
 colormap(bone);
 xlabel('Time (s)');
@@ -34,6 +39,8 @@ cb = colorbar;
 ylabel(cb, 'Power spectral density (dB/Hz)');
 hold on;
 
+%% overlay the behavior times
+overlayBehavior(damStruct,behavior)
 % commented below out for pre-behavior scoring analysis
 
 % beh = unique(behaviorStruct.Behaviors);
@@ -55,6 +62,6 @@ hold on;
 if strcmp(saveFig,'on')
     fileName_fig = [animalID '_spectrogram.fig'];
     fileName_png = [animalID '_spectrogram.png'];
-    savefig(fh,fullfile(filePath,fileName_fig));
-    print(gcf,fullfile(filePath,fileName_png),'-dpng');
+    savefig(fh,fullfile(outfilepath,fileName_fig));
+    print(gcf,fullfile(outfilepath,fileName_png),'-dpng');
 end
