@@ -1,0 +1,3 @@
+Get framerate from the video and put in dam structure
+- Replace it in CreateBehaviorTemplate and CreateBehaviorKey (or something create something)
+Check the goodness of multiplier in CreateBehaviorTemplate
