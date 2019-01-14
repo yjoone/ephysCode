@@ -6,7 +6,7 @@ durSecondsAnalysisWindow = 2; %seconds
 %% step 1: set appropriate paths
 initializePath
 
-currDir = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Neil';
+currDir = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Miranda';
 curPath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\LizAnnPipeLineExample\';
 databasepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\MasterDBVole_samplePipeline.xls';
 
@@ -26,7 +26,7 @@ syncdetailfilename = 'SyncDetail.xlsx';
 Chronux_startup
 
 %% step 2: get neural and behavioral data
-recd_DC = getrecd_mdb('LFP',mdb,{'Animal','Scorer'},{{'Neil'},{'JK'}},'NeuralBehav','both');
+recd_DC = getrecd_mdb('LFP',mdb,{'Animal','Scorer'},{{'Miranda'},{'JK'}},'NeuralBehav','both');
 % recdNeil_Nacc_DS = recd_DC(1);
 % recdNeil_PFC_DS = recd_DC(2);
 recdNeil_PFC_DS = recd_DC(1);
