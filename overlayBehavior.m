@@ -6,7 +6,7 @@ ly = 70;
 samplerate = 199.8049;
 xunit = 'seconds';
 
-assign(varargin)
+assign(varargin{:})
 
 % put hold
 hold(ah,'on')

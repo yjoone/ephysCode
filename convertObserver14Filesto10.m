@@ -2,8 +2,8 @@
 
 
 
-filename = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\O\O_Habituation2AndCohab_JK_1.txt'
-outfilename = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\O\O_Habituation2AndCohab_JK_1_csv1.txt'
+filename = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Miranda\VoleEphysProject - Miranda_Cohab_Jim - Event Logs.txt'
+outfilename = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Miranda\Miranda_Habituation2AndCohab_JK_1.txt'
 [num,txt,raw] = xlsread(filename);
 
 
@@ -17,7 +17,11 @@ for i = 1:nrow
     ci = 1;
     for c = 1:15 % specifically for observer 14
         if c ~= 1 && c ~= 5
-            outC{i,ci} = linespl{c};
+            tempvar = linespl{c};
+            if sum(ismember(tempvar,'"')) < 1
+                tempvar = ['"' tempvar '"'];
+            end
+            outC{i,ci} = tempvar;
             ci = ci+1;
         end
     end

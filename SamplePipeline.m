@@ -301,8 +301,14 @@ coherogramStructNoBiasCorrectionNoTransformNoMeanSTD_BLAPFC_noavg = ...
     'movingwinStruct',movingwinStruct,'biasCorrectAndTransform','off');
 
 %% Step 14: Add means and stds to coherogram structures
+coherogramStructNoMeanSTD_NAccPFC = coherogramStructPostProcessing(coherogramStructNoMeanSTD_NAccPFC)
+% coherogramStructNoBiasCorrectionNoTransformNoMeanSTD_NAccPFC = coherogramStructPostProcessing(coherogramStructNoBiasCorrectionNoTransformNoMeanSTD_NAccPFC)
+coherogramStructNoMeanSTD_NAccPFC_noavg = coherogramStructPostProcessing(coherogramStructNoMeanSTD_NAccPFC_noavg)
+coherogramStructNoMeanSTD_NAccBLA = coherogramStructPostProcessing(coherogramStructNoMeanSTD_NAccBLA)
+coherogramStructNoMeanSTD_NAccBLA_noavg = coherogramStructPostProcessing(coherogramStructNoMeanSTD_NAccBLA_noavg)
+coherogramStructNoMeanSTD_BLAPFC = coherogramStructPostProcessing(coherogramStructNoMeanSTD_BLAPFC)
+coherogramStructNoMeanSTD_BLAPFC_noavg = coherogramStructPostProcessing(coherogramStructNoMeanSTD_BLAPFC_noavg)
 
-coherogramStruct = coherogramStructPostProcessing(coherogramStruct)
 
 % coherogramStruct = coherogramStructNoMeanSTD_NAccPFC;
 % coherogramStructNoBiasCorrectionNoTransform = coherogramStructNoBiasCorrectionNoTransformNoMeanSTD;
