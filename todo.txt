@@ -1,3 +1,9 @@
 Get framerate from the video and put in dam structure
 - Replace it in CreateBehaviorTemplate and CreateBehaviorKey (or something create something)
 Check the goodness of multiplier in CreateBehaviorTemplate
+
+
+for each experiment
+- check all channel data and sync output is as expected (data channel 3-6 and sync channel 7)
+- combine all the videos and make sure that the start and end of sync pulses are present. 
+	- also put it in syncDetail.xlsx file for each animal
