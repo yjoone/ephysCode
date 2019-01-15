@@ -375,7 +375,7 @@ if isfield(recdstruct,'Behav')
                 % create one
                 timestampfilenameNL = win2unix(fullfile(pathname,[recdstruct.Filestr,'_timestamplog.xlsx']));
                 % videoFilenameNL = win2unix(fullfile(pathname,[recdstruct.Filestr,'.mpg']));
-                videoFilenameNL = win2unix([recdstruct.Filestr,'.avi']); % this was putting in double fullfile to CreateTimestampLogNL. JK 122818
+                videoFilenameNL = win2unix([recdstruct.Filestr,'.MP4']); % this was putting in double fullfile to CreateTimestampLogNL. JK 122818
                 if ~exist(timestampfilenameNL,'file')
                     disp('*** Creating a timestamp log');
                     if ~exist('samplerate') % when none of the files above are created, then sample rate remains blank

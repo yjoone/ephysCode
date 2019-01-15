@@ -1,6 +1,7 @@
 function [alldata] = LoaddatabulkNL_jk(datacell,varargin)
 % Extracts data for each channel from the full data set read in readNL
-datacellsegment=1;
+%datacellsegment=1;
+datacellsegment=3; % for O analysis
 appendWithFollowingDatacellsegments = 1;
 bufferVal = 0;
 assign(varargin{:});
