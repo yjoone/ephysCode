@@ -6,18 +6,18 @@ function plotBehRawTraces(damStruct,animalID,behavIDname,outfilepath)
 
 %% unload the data
 signal = damStruct.trials.signal;
-behdata = damNeil_NAcc.trials.behavindices.(behavIDname); % nx2 
+behdata = damStruct.trials.behavindices.(behavIDname); % nx2 
 
 %% set up the loop to plot each epoch
 [r,c] = size(behdata);
 
 for i = 1:r
-    behtimestart = behdata(r,1);
-    behtimestop = behdata(r,2);
+    behtimestart = behdata(i,1);
+    behtimestop = behdata(i,2);
     behsignal = signal(behtimestart:behtimestop);
     
     % plot the figure
-    figure('visible','off')
+    fh = figure('visible','off')
     plot(behsignal)
     ylabel('NL unit')
     xlabel('Samples')
@@ -27,5 +27,6 @@ for i = 1:r
     outfilename = ['Rawtrace_' animalID '_' behavIDname '_' ...
         num2str(i)];
     
-    savefigure(gcf,outfilepath,outfilename);
+    savefigure(fh,outfilepath,outfilename);
+    close(fh);
 end

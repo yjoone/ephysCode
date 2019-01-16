@@ -65,3 +65,5 @@ if strcmp(saveFig,'on')
     savefig(fh,fullfile(outfilepath,fileName_fig));
     print(gcf,fullfile(outfilepath,fileName_png),'-dpng');
 end
+
+close(fh);
