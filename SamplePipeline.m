@@ -22,7 +22,7 @@ end
 
 % sync detail filename
 syncdetailfilename = 'SyncDetail.xlsx';
-
+timestamplogfilename = 'timestamplog.xlsx';
 Chronux_startup
 
 %% step 2: get neural and behavioral data
@@ -108,17 +108,27 @@ end
 
 
 %% Specify experiment range in samples. load in synchronization detail information from the excel file
-try
-    [num,txt] = xlsread(syncdetailfilename);
-    for i = 2:length(txt) % start from second row to skip headers
-        assign(txt{i,1},num(i-1,1)); % num variable does not have header so readjust
-    end
-catch
-    disp('make sure there is the syncdetail.xlsx file in the experiment file path')
-    keyboard
-end
+% try
+%     [num,txt] = xlsread(syncdetailfilename);
+%     for i = 2:length(txt) % start from second row to skip headers
+%         assign(txt{i,1},num(i-1,1)); % num variable does not have header so readjust
+%     end
+% catch
+%     disp('make sure there is the syncdetail.xlsx file in the experiment file path')
+%     keyboard
+% end
+% 
+% cohabRange = [NLstartcohab NLendcohab];
+% 
+% 
 
-cohabRange = [NLstartcohab NLendcohab];
+timestampfilenameNL = win2unix(fullfile([recdNeil_PFC_DS.Filestr,'_timestamplog.xlsx']));
+[num,txt,raw] = xlsread(timestampfilenameNL);
+
+
+cohabRange = [num(1,3) num(end,3)];
+    % 3 is the column number for the output excel file from
+    % createTimestampLogNL
 %
 % % habitRange = [568946 1298927]; % ~60.9 min habituation
 % cohabRange = [1313167 5653055];% ~362.0 min cohabitation

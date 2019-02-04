@@ -368,7 +368,7 @@ if isfield(recdstruct,'Behav')
                 sortedNum = Num(sortIndices,:); % sort data (rows of behavior starts and stops) accordingly
                 
                 softwareColumn = Txt(2:end,scoringSoftwareColumn); % sort scoring software associated with each data row; added EA 4/29/14
-                sortedSoftwareCell = softwareColumn(sortIndices,:);
+                sortedSoftwareCell = softwareColumn(sortIndices,:);  
                
                 
                 % to convert data from frames to samples, first check that there's a file with neural and video timestamps (timestamp log); otherwise need to
