@@ -40,6 +40,10 @@ while hasFrame(v)
     i = i+1;
 end
 
+% save framerate 
+save(fullfile(filepath,'framerate.mat'),'framerate');
+
+
 if strcmpi(plotTF,'on')
     
     figure;
