@@ -73,67 +73,18 @@ for i = 1:nfield
             
             
             % plot coherence temporal average
-            plotCoherogramStructsubroutine(coherogramDatas,f,t,[animalID 'TemporalAverage'],...
+            plotCoherogramStructsubroutine(coherogramDatas,f,t,[animalID 'EachEpoch'],...
                 (behfields{i}),climc,'chan1name',chan1name,'chan2name',chan2name,'trials',1)
             
             % plot multitaper temporal power average
-            plotCoherogramStructsubroutine_power(mtpowerData1s,f,t,[animalID 'TemporalAverage'],...
+            plotCoherogramStructsubroutine_power(mtpowerData1s,f,t,[animalID 'EachEpoch'],...
                 (behfields{i}),climp,'channame',chan1name,'trials',1)
             
-            plotCoherogramStructsubroutine_power(mtpowerData2s,f,t,[animalID 'TemporalAverage'],...
+            plotCoherogramStructsubroutine_power(mtpowerData2s,f,t,[animalID 'EachEpoch'],...
                 (behfields{i}),climp,'channame',chan2name,'trials',1)
     end
 end
 end
 
-function plotCoherogramStructsubroutine(data,f,t,animalID,behavior,clim,varargin)
-
-% subroutine of plotCoherogramStruct. Plots each figure based on input
-assign(varargin{:})
-
-figure('visible','off');
-imagesc(f,t,data)
-colorbar
-set(gca,'clim',clim)
-title(['Coherence plot ' behavior ' ' chan1name ' and '...
-    chan2name ' '  animalID ])
-xlabel('Frequency (Hz)')
-ylabel('Time (ms)')
-
-if exist('trials','var')
-    ylabel('Behavior epochs')
-end
-
-% save figures
-outfilepath = cd;
-outfilename = ['CoherencePlot_' behavior '_' chan1name  '_and_'...
-    chan2name '_' animalID];
-savefigure(gcf,outfilepath,outfilename)
-close(gcf)
-end
-
-function plotCoherogramStructsubroutine_power(data,f,t,animalID,behavior,clim,varargin)
-
-% subroutine of plotCoherogramStruct but for multitaper power.
-% Plots each figure based on input
-assign(varargin{:})
-
-figure('visible','off');
-imagesc(f,t,data)
-colorbar
-set(gca,'clim',clim)
-title(['Multitaper Power plot ' behavior ' ' channame ' '  animalID])
-xlabel('Frequency (Hz)')
-ylabel('Time (ms)')
-
-if exist('trials','var')
-    ylabel('Behavior epochs')
-end
-% save figures
-outfilepath = cd;
-outfilename = ['MultitaperPowerplot_' behavior '_' channame  '_' animalID];
-savefigure(gcf,outfilepath,outfilename)
-close(gcf)
-end
 
 

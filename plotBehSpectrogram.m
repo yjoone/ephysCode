@@ -1,4 +1,4 @@
-function plotBehSpectrogram(damStruct,animalID,behavIDname,outfilepath,varargin)
+function plotBehSpectrogram(damStruct,animalID,behavIDname,varargin)
 
 
 % 
@@ -8,6 +8,7 @@ overlap = 64;
 saveFig = 'on';
 clim = [5 30]; 
 subplotrawtrace = 'on';
+outfilepath = cd;
 
 assign(varargin{:})
 %% plot spectrogram for each behavior epochs if exists
