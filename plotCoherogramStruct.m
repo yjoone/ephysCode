@@ -36,14 +36,14 @@ for i = 1:nfield
         case 1
             % plot coherence average
             plotCoherogramStructsubroutine(coherogramData,f,t,[animalID 'Average'],...
-                (behfields{i}),climc,'chan1name',chan1name,'chan2name',chan2name)
+                (behfields{i}),climc,climp,'chan1name',chan1name,'chan2name',chan2name)
             
             % plot multitaper power average
             plotCoherogramStructsubroutine_power(mtpowerData1,f,t,[animalID 'Average'],...
-                (behfields{i}),climp,'channame',chan1name)
+                (behfields{i}),climc,climp,'channame',chan1name)
             
             plotCoherogramStructsubroutine_power(mtpowerData2,f,t,[animalID 'Average'],...
-                (behfields{i}),climp,'channame',chan2name)
+                (behfields{i}),climc,climp,'channame',chan2name)
             
         case 0
             % for this case, run each epoch
@@ -55,14 +55,14 @@ for i = 1:nfield
                 
 
                 plotCoherogramStructsubroutine(coherogramData_temp,f,t,[animalID ' ' num2str(epochi)],...
-                    (behfields{i}),climc,'chan1name',chan1name,'chan2name',chan2name)
+                    (behfields{i}),climc,climp,'chan1name',chan1name,'chan2name',chan2name)
 
                 % plot multitaper power average
                 plotCoherogramStructsubroutine_power(mtpowerData1_temp,f,t,[animalID ' ' num2str(epochi)],...
-                    (behfields{i}),climp,'channame',chan1name)
+                    (behfields{i}),climc,climp,'channame',chan1name)
 
                 plotCoherogramStructsubroutine_power(mtpowerData2_temp,f,t,[animalID ' ' num2str(epochi)],...
-                    (behfields{i}),climp,'channame',chan2name)
+                    (behfields{i}),climc,climp,'channame',chan2name)
             end
             
             % plot temporal average
@@ -74,14 +74,14 @@ for i = 1:nfield
             
             % plot coherence temporal average
             plotCoherogramStructsubroutine(coherogramDatas,f,t,[animalID 'EachEpoch'],...
-                (behfields{i}),climc,'chan1name',chan1name,'chan2name',chan2name,'trials',1)
+                (behfields{i}),climc,climp,'chan1name',chan1name,'chan2name',chan2name,'trials',1)
             
             % plot multitaper temporal power average
             plotCoherogramStructsubroutine_power(mtpowerData1s,f,t,[animalID 'EachEpoch'],...
-                (behfields{i}),climp,'channame',chan1name,'trials',1)
+                (behfields{i}),climc,climp,'channame',chan1name,'trials',1)
             
             plotCoherogramStructsubroutine_power(mtpowerData2s,f,t,[animalID 'EachEpoch'],...
-                (behfields{i}),climp,'channame',chan2name,'trials',1)
+                (behfields{i}),climc,climp,'channame',chan2name,'trials',1)
     end
 end
 end

@@ -5,10 +5,10 @@
 NLname = 'Geoff';
 % NLname = 'NY';
 
-filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Karl\Habituation1_Karl_101718.hex';
-
+% filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Karl\Habituation1_Karl_101718.hex';
+filepath = 'C:\Users\ykwon36\Documents\workspace_Jim\Paul\Habituation2_And_Cohab_Paul_012519.hex'
 % outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL';
-outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Karl';
+outfilepath = 'C:\Users\ykwon36\Documents\workspace_Jim\Paull';
 
 % add the code path for neurologger import function
 addpath('R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\ephysCode')

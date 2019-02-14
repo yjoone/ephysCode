@@ -1,6 +1,6 @@
 % plotCoherogramStruct in script form. To be used in SamplePipeline.m
 
-animalID = 'O';
+animalID = 'PaulOtherBehavior';
 chan1name = 'NAcc';
 chan2name = 'PFC';
 chan3name = 'BLA';
