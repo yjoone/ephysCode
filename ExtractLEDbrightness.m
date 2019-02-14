@@ -2,17 +2,18 @@ function [LED,framerate] = ExtractLEDbrightness(filepath,filename,varargin)
 % function modified from ExtractLEdBrightness_script
 
 plotTF = 'on';
-assign(varargin)
+LEDregionsize = 15;
+assign(varargin{:})
 
-if ~exist('LEDpos',1)
+if ~exist('LEDpos','var')
     vo = VideoReader(fullfile(filepath,filename));
     figure; imagesc(readFrame(vo));
     title(['Click on the LED position. If having trouble, independently load the video and find LEDpos'])
     waitforbuttonpress;
     % Determine the current point
     Cp = get(gca,'CurrentPoint');
-    Xp = Cp(2,1);  % X-point
-    Yp = Cp(2,2);  % Y-point
+    Xp = round(Cp(2,1));  % X-point
+    Yp = round(Cp(2,2));  % Y-point
     LEDpos = [Xp, Yp];
 end
 
@@ -36,7 +37,8 @@ framerate = v.FrameRate;
 i = 1;
 while hasFrame(v)
     I_temp = readFrame(v);
-    LED(i) = I_temp(LEDpos(1),LEDpos(2),1);
+    LED(i) = max(max(I_temp([(LEDpos(1)-LEDregionsize):(LEDpos(1)+LEDregionsize)]...
+        ,[(LEDpos(2)-LEDregionsize):(LEDpos(2)+LEDregionsize)],1)));
     i = i+1;
 end
 
