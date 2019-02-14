@@ -171,6 +171,7 @@ switch lower(recdstruct.Software)
         varargout{outparam}.trials.timestamp=NaN;
         varargout{outparam}.trials.SGI=NaN;
         varargout{outparam}.trials.stimparams=NaN;
+        varargout{outparam}.param.samplerate = NaN; % JK edit 021419.
         
         binaryfilenames ={'chan1','chan2','chan3','chan4'}; % Setting up to save NL channels as binary files -- once these files are made, much faster to load in data for analysis compared to original .hex format   
         channel=recdstruct.Channel; % channel number
@@ -269,7 +270,7 @@ switch lower(recdstruct.Software)
 
         varargout{outparam}.trials.timestamp = NaN;
         varargout{outparam}.trials.SGI = NaN;
-        varargout{outparam}.trials.stimparams = NaN;
+        varargout{outparam}.trials.stimparams = NaN; 
 
         switch loadformat
             case 'bin_noartifactremoval',
@@ -281,6 +282,7 @@ switch lower(recdstruct.Software)
         end
         
         varargout{outparam}.trials.movement = movedataNonZeroIfMove; 
+        varargout{outparam}.param.samplerate = recdstruct.Samplerate; % JK edit 021419.
         
     otherwise
         % Non-brainware file
@@ -338,7 +340,7 @@ if isfield(recdstruct,'Behav')
                 
                 % iteration needs to be in a template format; if template file doesn't exist, need to make
                 % one 
-
+%% create behavior template
                 behavtemplatefilenameNL = win2unix(fullfile(pathname,[recdstruct.Filestr,'_behavtemplate.xlsx']));
                 if isequal(wantCreateBehavTemplateNL,true)
                     if exist(behavtemplatefilenameNL,'file')
@@ -368,9 +370,9 @@ if isfield(recdstruct,'Behav')
                 sortedNum = Num(sortIndices,:); % sort data (rows of behavior starts and stops) accordingly
                 
                 softwareColumn = Txt(2:end,scoringSoftwareColumn); % sort scoring software associated with each data row; added EA 4/29/14
-                sortedSoftwareCell = softwareColumn(sortIndices,:);
+                sortedSoftwareCell = softwareColumn(sortIndices,:);  
                
-                
+%% create time stamp log nL
                 % to convert data from frames to samples, first check that there's a file with neural and video timestamps (timestamp log); otherwise need to
                 % create one
                 timestampfilenameNL = win2unix(fullfile(pathname,[recdstruct.Filestr,'_timestamplog.xlsx']));
@@ -384,6 +386,8 @@ if isfield(recdstruct,'Behav')
                     end
                     CreateTimestampLogNL(IRdata,samplerate,pathname,timestampfilenameNL,videoFilenameNL);
                 end
+                
+%% estimate behavior sample periods
                 % convert frames to samples
                 % [behavSamples]=EstimateSamplesNL(sortedNum,timestampfilenameNL,pathname,sortedSoftwareCell); % added sortedSoftwareCell as an input on 4/29/14, EA
                 [behavSamples]=EstimateSamplesNL_test(sortedNum,timestampfilenameNL,pathname,sortedSoftwareCell); % added sortedSoftwareCell as an input on 4/29/14, EA
@@ -425,6 +429,10 @@ if isfield(recdstruct,'Behav')
 %                     headername = sortedUniqueHeaders{i};
 %                     varargout{outparam}.trials.behavindices.(headername)=epochs{i}; % will make a separate field for each BehavID; each BehavID field will have a Nx2 matrix, N: # epoch of the given behavior, first column: epoch start (samples), second column: epoch end (samples)
 %                 end
+
+                % add in the framerate parameter
+                load(fullfile(pathname,'framerate.mat'))
+                varargout{outparam}.param.framerate = framerate;
         end
     end
 end

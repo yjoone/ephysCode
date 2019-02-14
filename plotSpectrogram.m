@@ -15,7 +15,8 @@ window = 512;
 overlap = 256;
 saveFig = 'on';
 clim = [5 30]; 
-outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\spectogramAnalysis';
+% outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\spectogramAnalysis';
+outfilepath = cd;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 assign(varargin{:})
@@ -65,3 +66,5 @@ if strcmp(saveFig,'on')
     savefig(fh,fullfile(outfilepath,fileName_fig));
     print(gcf,fullfile(outfilepath,fileName_png),'-dpng');
 end
+
+close(fh);
