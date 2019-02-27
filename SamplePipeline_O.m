@@ -319,6 +319,14 @@ coherogramStructNoMeanSTD_NAccBLA_noavg = coherogramStructPostProcessing(coherog
 coherogramStructNoMeanSTD_BLAPFC = coherogramStructPostProcessing(coherogramStructNoMeanSTD_BLAPFC)
 coherogramStructNoMeanSTD_BLAPFC_noavg = coherogramStructPostProcessing(coherogramStructNoMeanSTD_BLAPFC_noavg)
 
+%% save the progess so far in completedRun.mat
+if ~exist('completedRun.mat')
+    save('completedRun.mat')
+else
+    disp(['There is a completedRun.mat file in the directory. Double check' ...
+        ' and save manually if needed'])
+    keyboard
+end
 
 % coherogramStruct = coherogramStructNoMeanSTD_NAccPFC;
 % coherogramStructNoBiasCorrectionNoTransform = coherogramStructNoBiasCorrectionNoTransformNoMeanSTD;

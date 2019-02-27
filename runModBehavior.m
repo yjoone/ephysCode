@@ -100,8 +100,8 @@ end
 
 switch dataAcq
     case 'NL'
-        % clipRange = [-127.5 127.5]; % clipRange(1) < data < clipRange(2)
-        clipRange = [0 255];
+        clipRange = [-127.5 127.5]; % clipRange(1) < data < clipRange(2)
+        % clipRange = [0 255];
     case 'TDT' % fill in for TDT
         clipRange = [-inf inf];%is there a clipping range in TDT? 
 end
