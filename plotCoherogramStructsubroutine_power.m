@@ -49,4 +49,24 @@ outfilepath = cd;
 outfilename = ['MultitaperLineAveragePowerplot_' behavior '_' channame  '_' animalID];
 savefigure(gcf,outfilepath,outfilename)
 close(gcf)
+
+%% plot the average line graph
+figure('visible','off');
+
+% compute the standard error to add
+stdev = std(data);
+sz = size(data);
+stderr = stdev./sqrt(sz(1));
+plot(f,mean(data))
+shadedErrorBar(f,mean(data),stderr)
+set(gca,'ylim',climpower);
+title(['Multitaper Line Average Power plot ' behavior ' ' channame ' '  animalID])
+xlabel('Frequency (Hz)')
+ylabel('Time (ms)')
+
+% save figures
+outfilepath = cd;
+outfilename = ['MultitaperLineAveragePowerShadedplot_' behavior '_' channame  '_' animalID];
+savefigure(gcf,outfilepath,outfilename)
+close(gcf)
 end

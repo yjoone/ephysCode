@@ -53,4 +53,26 @@ outfilename = ['CoherenceLineAveragePlot_' behavior '_' chan1name  '_and_'...
     chan2name '_' animalID];
 savefigure(gcf,outfilepath,outfilename)
 close(gcf)
+
+%% plot the average line graph with error bars
+figure('visible','off');
+% compute the standard error to add
+stdev = std(data);
+sz = size(data);
+stderr = stdev./sqrt(sz(1));
+plot(f,mean(data));
+shadedErrorBar(f,mean(data),stderr)
+set(gca,'ylim',clim)
+title(['Coherence line average plot ' behavior ' ' chan1name ' and '...
+    chan2name ' '  animalID ])
+xlabel('Frequency (Hz)')
+ylabel('Coherence value')
+
+% save figures
+outfilepath = cd;
+outfilename = ['CoherenceLineAverageShadedPlot_' behavior '_' chan1name  '_and_'...
+    chan2name '_' animalID];
+savefigure(gcf,outfilepath,outfilename)
+close(gcf)
+
 end

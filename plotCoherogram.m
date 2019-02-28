@@ -1,66 +1,108 @@
-function plotCoherogram(coherogramStruct,chan1name,chan2name,varargin)
+function plotCoherogram(coherogramStruct,animalID,chan1name,chan2name,varargin)
 
-% this function takes in coherogramStruct, which is the output after
-% SamplePipeline.m script step 14. 
+% this function take in the coherogramStruct, output from SamplePipeline
+% and plots individual behavior epochs or overall average depending on
+% coherogramStruct.
 
-% in case behaviorName and outName is different, this can be used to
-% specify output name. (ie. varargin = [{outName},{NeilOther}];)
-
-% Hard coded for mountingMale behavior. 
-
-behaviorName = 'mountingMale';
-outName = behaviorName;
-
+ploteachepoch = 'no'; % default
+climc = [0 3];
+ylimp = [-30 30];
 assign(varargin{:})
 
+%% unload the data
+behfields = fields(coherogramStruct);
+nfield = length(behfields);
 
-%% unload data
-% dataStruct = coherogramStruct.(behaviorName);
-f = coherogramStruct.(behaviorName).f;
-C = coherogramStruct.(behaviorName).C;
-S1 = coherogramStruct.(behaviorName).S1;
-S2 = coherogramStruct.(behaviorName).S2;
+%% check whether the coherogramStruct size
+% This is done to check if the struct was created with average or not
+tempData1 = coherogramStruct.(behfields{1}).C;
+tempDatadim1 = size(tempData1);
+tempData2 = coherogramStruct.(behfields{2}).C;
+tempDatadim2 = size(tempData2);
+tempData3 = coherogramStruct.(behfields{3}).C;
+tempDatadim3 = size(tempData3);
+if length(tempDatadim1) > 2
+    noaverage = 0;
+    nepochs1 = tempDatadim1(3);
+    nepochs2 = tempDatadim2(3);
+    nepochs3 = tempDatadim3(3);
+else
+    noaverage = 1;
+end
 
-[ntrial,~] = size(C);
+% repeat for each behavior (per field)
+for i = 1:nfield
+    coherogramData = coherogramStruct.(behfields{i}).C;
+    mtpowerData1 = coherogramStruct.(behfields{i}).S1;
+    mtpowerData2 = coherogramStruct.(behfields{i}).S2;
+    f = coherogramStruct.(behfields{i}).f;
+    t = coherogramStruct.(behfields{i}).t;
+    
+    switch noaverage
+        case 1
+            
+            % plot coherence average
+            plotCoherogramStructsubroutine(coherogramData,f,t,[animalID 'Average'],...
+                (behfields{i}),climc,ylimp,'chan1name',chan1name,'chan2name',chan2name)
+            
+            % plot multitaper power average
+            plotCoherogramStructsubroutine_power(mtpowerData1,f,t,[animalID 'Average'],...
+                (behfields{i}),climc,ylimp,'channame',chan1name)
+            
+            plotCoherogramStructsubroutine_power(mtpowerData2,f,t,[animalID 'Average'],...
+                (behfields{i}),climc,ylimp,'channame',chan2name)
+            
+        case 0
+            if strcmpi('yes',ploteachepoch)
+                % get the correct number of epochs
+                eval(['nepochs = nepochs' num2str(i) ';'])
+                % for this case, run each epoch
+                for epochi = 1:nepochs
+                    
+                    coherogramData_temp = coherogramStruct.(behfields{i}).C(:,:,epochi);
+                    mtpowerData1_temp = coherogramStruct.(behfields{i}).S1(:,:,epochi);
+                    mtpowerData2_temp = coherogramStruct.(behfields{i}).S2(:,:,epochi);
+                    
+                    
+                    plotCoherogramStructsubroutine(coherogramData_temp,f,t,[animalID ' ' num2str(epochi)],...
+                        (behfields{i}),climc,ylimp,'chan1name',chan1name,'chan2name',chan2name)
+                    
+                    % plot multitaper power average
+                    plotCoherogramStructsubroutine_power(mtpowerData1_temp,f,t,[animalID ' ' num2str(epochi)],...
+                        (behfields{i}),climc,ylimp,'channame',chan1name)
+                    
+                    plotCoherogramStructsubroutine_power(mtpowerData2_temp,f,t,[animalID ' ' num2str(epochi)],...
+                        (behfields{i}),climc,ylimp,'channame',chan2name)
+                end
+            end
+            
+            % plot temporal average
+            
+            coherogramDatas = squeeze(mean(coherogramData,1))';
+            mtpowerData1s = squeeze(mean(mtpowerData1,1))';
+            mtpowerData2s = squeeze(mean(mtpowerData2,1))';
+            
+            
+            
+            % plot coherence temporal average
+%             plotCoherogramStructsubroutine(coherogramDatas,f,t,[animalID 'EachEpoch'],...
+%                 (behfields{i}),climc,ylimp,'chan1name',chan1name,'chan2name',chan2name,'trials',1)
+            plotCoherogramStructsubroutine(coherogramDatas,f,t,[animalID 'EachEpoch'],...
+                (behfields{i}),climc,ylimp,'chan1name',chan1name,'chan2name',chan2name,'trials',1)
+            
+            % plot multitaper temporal power average
+            plotCoherogramStructsubroutine_power(mtpowerData1s,f,t,[animalID 'EachEpoch'],...
+                (behfields{i}),climc,ylimp,'channame',chan1name,'trials',1)
+            
+            plotCoherogramStructsubroutine_power(mtpowerData2s,f,t,[animalID 'EachEpoch'],...
+                (behfields{i}),climc,ylimp,'channame',chan2name,'trials',1)
+    end
+end
 
-%% plot Coherence with biascorrection, transform, meanSTD
+%% plot average coherence value for all behaviors
+plotCoherogramOverlayBehaviorSubroutine(coherogramStruct,animalID,climc,'chan1name',chan1name,'chan2name',chan2name)
+plotPowerOverlayBehaviorSubroutine(coherogramStruct,animalID,ylimp,'chan1name',chan1name,'chan2name',chan2name)
+end
 
-figure; 
-imagesc(f,ntrial,C);
-title(['Coherence ' outName])
-xlabel('Frequency (Hz)')
-ylabel('Trials')
 
-outfilepath = cd;
-outfilename = ['Coherence_' outName];
 
-savefigure(fh,outfilepath,outfilename,varargin)
-close(gcf)
-
-%% plot Multitaper power with biascorrection, transform, meanSTD
-
-figure; 
-imagesc(f,ntrial,S1);
-title(['Power Multitaper ' chan1name ' ' outName])
-xlabel('Frequency (Hz)')
-ylabel('Trials')
-
-outfilepath = cd;
-outfilename = ['Power_Multitaper' chan1name ' ' outName];
-
-savefigure(fh,outfilepath,outfilename,varargin)
-close(gcf)
-
-%% plot Multitaper power with biascorrection, transform, meanSTD
-
-figure; 
-imagesc(f,ntrial,S2);
-title(['Power Multitaper ' chan2name ' ' outName])
-xlabel('Frequency (Hz)')
-ylabel('Trials')
-
-outfilepath = cd;
-outfilename = ['Power_Multitaper' chan2name ' ' outName];
-
-savefigure(fh,outfilepath,outfilename,varargin)
-close(gcf)

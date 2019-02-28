@@ -14,11 +14,12 @@ chan1name = 'NAcc';
 chan2name = 'PFC';
 chan3name = 'BLA';
 
-plotCoherogramStruct(coherogramStructNoMeanSTD_NAccPFC,animalID,chan1name,chan2name)
-plotCoherogramStruct(coherogramStructNoMeanSTD_BLAPFC,animalID,chan3name,chan2name)
-plotCoherogramStruct(coherogramStructNoMeanSTD_NAccBLA,animalID,chan1name,chan3name)
+plotCoherogram(coherogramStructNoMeanSTD_NAccPFC,animalID,chan1name,chan2name)
+plotCoherogram(coherogramStructNoMeanSTD_BLAPFC,animalID,chan3name,chan2name)
+plotCoherogram(coherogramStructNoMeanSTD_NAccBLA,animalID,chan1name,chan3name)
 
-
+% PlotCoherogramStruct is older version of plotCoherogram. Change
+% accordingly - JK 022819
 plotCoherogramStruct(coherogramStructNoMeanSTD_NAccPFC_noavg,animalID,chan1name,chan2name)
 plotCoherogramStruct(coherogramStructNoMeanSTD_BLAPFC_noavg,animalID,chan3name,chan2name)
 plotCoherogramStruct(coherogramStructNoMeanSTD_NAccBLA_noavg,animalID,chan1name,chan3name)
