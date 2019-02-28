@@ -8,10 +8,11 @@ clear all
 clc
 
 % load in completedRun.mat
-load('R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\O\completedRun.mat')
+load('C:\Users\ykwon36\Documents\workspace_Jim\O\completedRun.mat')
 
 % format the data to be inputted to CFC analysis
-dam.neuralidsbehavs = damNeil_NAcc.trials.behavindices; 
+% dam.neuralidsbehavs = damNeil_NAcc.trials.behavindices; 
+dam.neuralidsbehavs = damNeil_PFC.trials.behavindices;
 dam.signal.PFC = damNeil_PFC.trials.signal  
 dam.signal.NAcc = damNeil_NAcc.trials.signal  
 dam.signal.BLA = damNeil_BLA.trials.signal  
