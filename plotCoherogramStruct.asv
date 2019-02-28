@@ -21,7 +21,7 @@ tempData2 = coherogramStruct.(behfields{2}).C;
 tempDatadim2 = size(tempData2);
 tempData3 = coherogramStruct.(behfields{3}).C;
 tempDatadim3 = size(tempData3);
-if length(tempDatadim1) > 2
+if length(tempDatadim) > 2
     noaverage = 0;
     nepochs1 = tempDatadim1(3);
     nepochs2 = tempDatadim2(3);
@@ -52,8 +52,6 @@ for i = 1:nfield
                 (behfields{i}),climc,ylimp,'channame',chan2name)
             
         case 0
-             % get the correct number of epochs
-             eval(['nepochs = nepochs' num2str(i) ';'])
             % for this case, run each epoch
             for epochi = 1:nepochs
                 

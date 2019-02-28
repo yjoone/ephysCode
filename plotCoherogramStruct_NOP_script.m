@@ -5,7 +5,7 @@ samplerate = 1.998048780487805e+02;
 
 clear all
 clc
-cd('C:\Users\ykwon36\Documents\workspace_Jim\O\Analysis_new')
+cd('C:\Users\ykwon36\Documents\workspace_Jim\O\AnalysisAllBehav')
 % load in completedRun.mat
 load('C:\Users\ykwon36\Documents\workspace_Jim\O\completedRun.mat')
 

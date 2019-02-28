@@ -12,6 +12,7 @@ if isunix
     
     % add in pretty plotting function
     addpath(win2unix('R:\LiuLab\People\Jim\Code\raacampbell-shadedErrorBar-0dc4de5'));
+    addpath(genpath(win2unix('C:\Users\ykwon36\Documents\GitHub\ephysCode\chronux_2_12_downloaded20170331')))
 else% add in database
     addpath('R:\LiuLab\matlab\database')
     % add in tools
@@ -20,6 +21,8 @@ else% add in database
     addpath('R:\Liulab\matlab\Neurologger');
     % add in pretty plotting function
     addpath('R:\LiuLab\People\Jim\Code\raacampbell-shadedErrorBar-0dc4de5');
+    addpath(genpath('C:\Users\ykwon36\Documents\GitHub\ephysCode\chronux_2_12_downloaded20170331'))
+
 end
 
 

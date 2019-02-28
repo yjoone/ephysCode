@@ -26,7 +26,7 @@ timestamplogfilename = 'timestamplog.xlsx';
 Chronux_startup
 
 %% step 2: get neural and behavioral data
-recd_DC = getrecd_mdb('LFP',mdb,{'Animal','Scorer'},{{'O'},{'JK'}},'NeuralBehav','both');
+recd_DC = getrecd_mdb('LFP',mdb,{'Animal','Scorer'},{{'O'},{'DC'}},'NeuralBehav','both');
 % recdNeil_Nacc_DS = recd_DC(1);
 % recdNeil_PFC_DS = recd_DC(2);
 recdNeil_PFC_DS = recd_DC(1);
@@ -36,7 +36,7 @@ samplerate = recdNeil_Nacc_DS.Samplerate;
 
 %% step 3: put behavior names? - check if it's necessary or can be obtained from xls file.
 % behavNames = {'mountingMale','huddlingFemale','huddlingMale','partnergroomingFemale','partnergroomingMale','sniffingFemale','sniffingMale','selfgroomingFemale','bitingFemale','approachFemale','approachMale','rearingFemale'};
-behavNames = {'mountingMale'};
+behavNames = {'mountingMale','huddlingMale','selfgroomingMale'};
 %% step 4: get raw data
 
 damNeil_NAcc_DS = loadrecd_mdb_drafting20130214(recdNeil_Nacc_DS,mdb);
@@ -45,10 +45,11 @@ damNeil_BLA_DS = loadrecd_mdb_drafting20130214(recdNeil_BLA_DS,mdb);
 
 
 threshStartOffsetSecondsStruct = struct('mountingMale',1,'huddlingFemale',5,...
-    'huddlingMale',5,'partnergroomingFemale',1,'partnergroomingMale',1,...
+    'huddlingMale',5,'selfgroomingMale',1,'partnergroomingFemale',1,'partnergroomingMale',1,...
     'sniffingFemale',1,'sniffingMale',1,'selfgroomingFemale',1,'bitingFemale',1,...
     'approachFemale',1,'approachMale',1,'rearingFemale',1);
 threshOverlapSecondsStruct = struct('mountingMale',durSecondsAnalysisWindow,...
+    'selfgroomingMale',durSecondsAnalysisWindow,...
     'huddlingFemale',durSecondsAnalysisWindow,'huddlingMale',durSecondsAnalysisWindow,...
     'partnergroomingFemale',durSecondsAnalysisWindow,'partnergroomingMale',durSecondsAnalysisWindow,...
     'sniffingFemale',durSecondsAnalysisWindow,'sniffingMale',durSecondsAnalysisWindow,...
@@ -193,7 +194,8 @@ TToUse = struct('mountingMale',TChronuxCohgramVal,'huddlingFemale',TChronuxCohgr
     'partnergroomingMale',TChronuxCohgramVal,'sniffingFemale',TChronuxCohgramVal,...
     'sniffingMale',TChronuxCohgramVal,'selfgroomingFemale',TChronuxCohgramVal,...
     'bitingFemale',TChronuxCohgramVal,'approachFemale',TChronuxCohgramVal,...
-    'approachMale',TChronuxCohgramVal,'rearingFemale',TChronuxCohgramVal);
+    'approachMale',TChronuxCohgramVal,'rearingFemale',TChronuxCohgramVal,...
+    'selfgroomingMale',TChronuxCohgramVal);
 padToUse = struct;
 for i=1:numel(behavNames)
     TToUseBehav=TToUse.(behavNames{i});
@@ -218,12 +220,13 @@ chronuxDataStructure23Use = chronuxDataStruct_Neil_PFC_Matched_withBLA;
 % pad to 32768 (2^15)
 paramsmountingMale = struct('pad',padToUse.mountingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramshuddlingFemale = struct('pad',padToUse.huddlingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
-% paramshuddlingMale = struct('pad',padToUse.huddlingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+paramshuddlingMale = struct('pad',padToUse.huddlingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramspartnergroomingFemale = struct('pad',padToUse.partnergroomingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramspartnergroomingMale = struct('pad',padToUse.partnergroomingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramssniffingFemale = struct('pad',padToUse.sniffingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramssniffingMale = struct('pad',padToUse.sniffingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramsselfgroomingFemale = struct('pad',padToUse.selfgroomingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
+paramsselfgroomingMale = struct('pad',padToUse.selfgroomingMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramsbitingFemale = struct('pad',padToUse.bitingFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramsapproachFemale = struct('pad',padToUse.approachFemale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
 % paramsapproachMale = struct('pad',padToUse.approachMale,'err',[2 0.05],'trialave',1,'Fs',samplerate);
@@ -259,6 +262,8 @@ end
 
 paramsStruct_noavg = paramsStruct;
 paramsStruct_noavg.mountingMale.trialave = 0;
+paramsStruct_noavg.huddlingMale.trialave = 0;
+paramsStruct_noavg.selfgroomingMale.trialave = 0;
 
 
 
