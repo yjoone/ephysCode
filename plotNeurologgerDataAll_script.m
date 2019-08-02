@@ -1,20 +1,29 @@
-function plotNeurologgerDataAll(datafullfilepath,varargin)
+% this script is to generate figures for the neurologger mechanical
+% connection testing
+
 %% todo
 %%%%%%%%% add in title for the figure %%%%%%%%%%%%%%%%
 
-%% get file name for output figure
-[filepath,fname,ext] = fileparts(datafullfilepath);
+%%
+% savefigure = 'off'
+savefigure = 'on'
 
-%% variables
-savefigure = 'on';
-NLname = 'NLNaN';
-outfilepath = filepath; % assumes the output folder is the input folder unless specified
-assign(varargin{:});
+% NLname = 'Geoff';
+NLname = 'NY';
+
+% filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Karl\Habituation1_Karl_101718.hex';
+fullfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\H2\Habituation.hex'
+% outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL';
+outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\HPractice';
 
 % add the code path for neurologger import function
 addpath('R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\ephysCode')
 
-[datacell,samplerate] = readNL_gka(datafullfilepath);
+%% get file name for output figure
+[filepath,name,ext] = fileparts(fullfilepath);
+fname = name;
+
+[datacell,samplerate] = readNL_gka(fullfilepath);
 
 % get the number of recordings. Each recording will be stored as an
 % individual cell in datacell
