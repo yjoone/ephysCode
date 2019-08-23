@@ -8,12 +8,15 @@ fieldnames = fields(modStruct);
 [nfield,~] = size(fieldnames);
 
 for i = 1:nfield
-    MIdata = modStruct.(fieldnames{i}).all;
-    
-    % get a single frequency value for all windows, if any pixel is NaN,
-    % the whole thing is NaN. 
-    
-    MIdataline = reshape(MIdata(1,1,:),1,[]);
-    nani = isnan(MIdataline);
-    modStruct.(fieldnames{i}).nani = nani;
+    try
+        MIdata = modStruct.(fieldnames{i}).all;
+
+        % get a single frequency value for all windows, if any pixel is NaN,
+        % the whole thing is NaN. 
+
+        MIdataline = reshape(MIdata(1,1,:),1,[]);
+        nani = isnan(MIdataline);
+        modStruct.(fieldnames{i}).nani = nani;
+    catch
+    end
 end
