@@ -7,7 +7,7 @@ climsnet = [-1e-3 2e-3];
 assign(varargin{:})
 
 mfields = fields(modStruct);
-
+datatemp = [];
 %% plot each MI
 for i = 1:length(mfields)
     datatempi = 1;

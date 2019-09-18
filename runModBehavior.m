@@ -8,7 +8,7 @@ function [modStruct,rasterWindowTimesSamplesStruct,flow,fhigh] = runModBehavior(
 % Inputs:
 %   dam (struct): stores neural data (samples) and sample indices
 %   corresponding to behaviors. Fieldnames of "signal", "samplerate"
-%   "neuralidsbehavs" (optional: if specifyBehavs variable, below, set to true). e.g. 
+%   "neuralidsbehavs" (optional: if specifyBehavs variable, below, set to true). e.g.
 %       dam.signal.NAcc <row vector with nucleus accumbens data (samples)>
 %       dam.signal.PFC <row vector with prefrontal cortex data (samples)>
 %       dam.neuralidsbehavs.mountingMale <row vector with sample indices
@@ -48,7 +48,7 @@ function [modStruct,rasterWindowTimesSamplesStruct,flow,fhigh] = runModBehavior(
 %   fhigh (vector array): set of amplitude frequencies used in MI analysis
 
 
-specifyBehavs = true; 
+specifyBehavs = true;
 windowSizeSeconds = 5;
 windowType = 'noneOverlap'; %'overlap'
 windowStepSeconds = windowSizeSeconds/10;
@@ -73,7 +73,7 @@ fhighBandPlusMinus = fhighStep/2;
 modStruct = struct;
 rasterWindowTimesSamplesStruct = struct;
 rasterWindowTimesSamples = [];
-windowSizeSamples = round(windowSizeSeconds*samplerate); 
+windowSizeSamples = round(windowSizeSeconds*samplerate);
 windowStepSamples = round(windowStepSeconds*samplerate);
 chanNames = fieldnames(dam.signal);
 switch specifyBehavs
@@ -103,7 +103,7 @@ switch dataAcq
         clipRange = [-127.5 127.5]; % clipRange(1) < data < clipRange(2)
         % clipRange = [0 255];
     case 'TDT' % fill in for TDT
-        clipRange = [-inf inf];%is there a clipping range in TDT? 
+        clipRange = [-inf inf];%is there a clipping range in TDT?
 end
 
 % extract data within specified range
@@ -114,7 +114,7 @@ for i=1:numChans
 end
 sizeRangeSamples = numel(dataInRange.(chanNames{1}));
 
-% establish window indices 
+% establish window indices
 startIndex = 1;
 lastIndex = startIndex+windowSizeSamples-1;
 if lastIndex > sizeRangeSamples
@@ -156,64 +156,69 @@ switch specifyBehavs
                         end
                 end
             end
-            winsBehavs.(behavNamei) = behavWinYes;     
+            winsBehavs.(behavNamei) = behavWinYes;
         end
-        
+        % compute Modulation Index for specific behaviors
         for k=1:numel(behavNames)
             behavNamek = behavNames{k};
             rasterWindowTimesSamplesStruct.(behavNamek) = rasterWindowTimesSamples(winsBehavs.(behavNamek),:);
         end
-end
-% 
-% % compute Modulation Index over all windows
-% for i=1:numel(chanNameCellPhaseFreq);
-%     dataChanPhaseFreq = dam.signal.(chanNameCellPhaseFreq{i});
-%     dataChanAmpFreq = dam.signal.(chanNameCellAmpFreq{i});
-%     mod2dValsChans = zeros(numel(flow),numel(fhigh),size(rasterWindowTimesSamples,1)); % row is low freq, column is high freq
-%     for j=1:size(rasterWindowTimesSamples,1)
-%         dataChanPhaseFreqWin = dataChanPhaseFreq(rasterWindowTimesSamples(j,1):rasterWindowTimesSamples(j,2));
-%         dataChanAmpFreqWin = dataChanAmpFreq(rasterWindowTimesSamples(j,1):rasterWindowTimesSamples(j,2));
-%         if isempty(find(dataChanPhaseFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanPhaseFreqWin>=clipRange(2),1)) && isempty(find(dataChanAmpFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanAmpFreqWin>=clipRange(2),1))
-%             [mod2dChans,phasepref2dChans] = KL_MI2d_specFreqs(dataChanPhaseFreqWin,dataChanAmpFreqWin,flow,fhigh,flowBandPlusMinus,fhighBandPlusMinus,samplerate,'n');
-%             mod2dValsChans(:,:,j) = mod2dChans;
-%         else
-%             mod2dValsChans(:,:,j) = NaN*ones(numel(flow),numel(fhigh)); % insert NaNs for windows with clipping
-%         end
-%     end
-%     
-%     modStruct.([chanNameCellPhaseFreq{i},'to',chanNameCellAmpFreq{i}]).all = mod2dValsChans;
-%     
-%     % index mod2dVals corresponding with behaviors
-%     switch specifyBehavs
-%         case true
-%             for k=1:numel(behavNames)
-%                 behavNamek = behavNames{k};
-%                 modStruct.([chanNameCellPhaseFreq{i},'to',chanNameCellAmpFreq{i}]).(behavNamek) = mod2dValsChans(:,:,winsBehavs.(behavNamek));
-%             end
-%     end
-% end
-
-
-% compute Modulation Index for specific behaviors
-for i=1:numel(chanNameCellPhaseFreq)
-    dataChanPhaseFreq = dam.signal.(chanNameCellPhaseFreq{i});
-    dataChanAmpFreq = dam.signal.(chanNameCellAmpFreq{i});
-    mod2dValsChans = zeros(numel(flow),numel(fhigh),nbehav); % row is low freq, column is high freq
-    for b = 1:numel(behavNames)
-        behtimes = dam.neuralidsbehavs.(behavNames{b});
-        [r,c] = size(behtimes); % organized by each row
-        for bi = 1:r
-            behaviorstart = behtimes(bi,1);
-            behaviorstop = behtimes(bi,2);
-            dataChanPhaseFreqWin = dataChanPhaseFreq(behaviorstart:behaviorstart+windowSizeSamples); % for specified duration above
-            dataChanAmpFreqWin = dataChanAmpFreq(behaviorstart:behaviorstart+windowSizeSamples);
-            if isempty(find(dataChanPhaseFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanPhaseFreqWin>=clipRange(2),1)) && isempty(find(dataChanAmpFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanAmpFreqWin>=clipRange(2),1))
-                [mod2dChans,phasepref2dChans] = KL_MI2d_specFreqs(dataChanPhaseFreqWin,dataChanAmpFreqWin,flow,fhigh,flowBandPlusMinus,fhighBandPlusMinus,samplerate,'n');
-                mod2dValsChans(:,:,bi) = mod2dChans;
-            else
-                mod2dValsChans(:,:,bi) = NaN*ones(numel(flow),numel(fhigh)); % insert NaNs for windows with clipping
+        
+        for i=1:numel(chanNameCellPhaseFreq)
+            dataChanPhaseFreq = dam.signal.(chanNameCellPhaseFreq{i});
+            dataChanAmpFreq = dam.signal.(chanNameCellAmpFreq{i});
+            mod2dValsChans = zeros(numel(flow),numel(fhigh),nbehav); % row is low freq, column is high freq
+            for b = 1:numel(behavNames)
+                behtimes = dam.neuralidsbehavs.(behavNames{b});
+                [r,c] = size(behtimes); % organized by each row
+                for bi = 1:r
+                    behaviorstart = behtimes(bi,1);
+                    behaviorstop = behtimes(bi,2);
+                    dataChanPhaseFreqWin = dataChanPhaseFreq(behaviorstart:behaviorstart+windowSizeSamples); % for specified duration above
+                    dataChanAmpFreqWin = dataChanAmpFreq(behaviorstart:behaviorstart+windowSizeSamples);
+                    if isempty(find(dataChanPhaseFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanPhaseFreqWin>=clipRange(2),1)) && isempty(find(dataChanAmpFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanAmpFreqWin>=clipRange(2),1))
+                        [mod2dChans,phasepref2dChans] = KL_MI2d_specFreqs(dataChanPhaseFreqWin,dataChanAmpFreqWin,flow,fhigh,flowBandPlusMinus,fhighBandPlusMinus,samplerate,'n');
+                        mod2dValsChans(:,:,bi) = mod2dChans;
+                    else
+                        mod2dValsChans(:,:,bi) = NaN*ones(numel(flow),numel(fhigh)); % insert NaNs for windows with clipping
+                    end
+                end
+            end
+            modStruct.([chanNameCellPhaseFreq{i},'to',chanNameCellAmpFreq{i}]).all = mod2dValsChans;
+        end
+    otherwise
+        % compute Modulation Index over all windows
+        for i=1:numel(chanNameCellPhaseFreq);
+            dataChanPhaseFreq = dam.signal.(chanNameCellPhaseFreq{i});
+            dataChanAmpFreq = dam.signal.(chanNameCellAmpFreq{i});
+            mod2dValsChans = zeros(numel(flow),numel(fhigh),size(rasterWindowTimesSamples,1)); % row is low freq, column is high freq
+            for j=1:size(rasterWindowTimesSamples,1)
+                dataChanPhaseFreqWin = dataChanPhaseFreq(rasterWindowTimesSamples(j,1):rasterWindowTimesSamples(j,2));
+                dataChanAmpFreqWin = dataChanAmpFreq(rasterWindowTimesSamples(j,1):rasterWindowTimesSamples(j,2));
+                if isempty(find(dataChanPhaseFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanPhaseFreqWin>=clipRange(2),1)) && isempty(find(dataChanAmpFreqWin<=clipRange(1),1)) &&  isempty(find(dataChanAmpFreqWin>=clipRange(2),1))
+                    [mod2dChans,phasepref2dChans] = KL_MI2d_specFreqs(dataChanPhaseFreqWin,dataChanAmpFreqWin,flow,fhigh,flowBandPlusMinus,fhighBandPlusMinus,samplerate,'n');
+                    mod2dValsChans(:,:,j) = mod2dChans;
+                else
+                    mod2dValsChans(:,:,j) = NaN*ones(numel(flow),numel(fhigh)); % insert NaNs for windows with clipping
+                end
+            end
+        
+            modStruct.([chanNameCellPhaseFreq{i},'to',chanNameCellAmpFreq{i}]).all = mod2dValsChans;
+        
+            % index mod2dVals corresponding with behaviors
+            switch specifyBehavs
+                case true
+                    for k=1:numel(behavNames)
+                        behavNamek = behavNames{k};
+                        modStruct.([chanNameCellPhaseFreq{i},'to',chanNameCellAmpFreq{i}]).(behavNamek) = mod2dValsChans(:,:,winsBehavs.(behavNamek));
+                    end
             end
         end
-    end
-    modStruct.([chanNameCellPhaseFreq{i},'to',chanNameCellAmpFreq{i}]).all = mod2dValsChans;
 end
+
+%
+
+
+
+
+

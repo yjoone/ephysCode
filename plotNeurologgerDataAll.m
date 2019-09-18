@@ -1,14 +1,14 @@
 % this script is to generate figures for the neurologger mechanical
 % connection testing
 
-
+plotTF = 'on'
 NLname = 'Geoff';
 % NLname = 'NY';
 
 % filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Karl\Habituation1_Karl_101718.hex';
-filepath = 'C:\Users\ykwon36\Documents\workspace_Jim\Paul\Habituation2_And_Cohab_Paul_012519.hex'
+filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\NLTroubleshooting\NLTesting_Saline_Geoff_040319.hex'
 % outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL';
-outfilepath = 'C:\Users\ykwon36\Documents\workspace_Jim\Paull';
+outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\NLTroubleshooting';
 
 % add the code path for neurologger import function
 addpath('R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\ephysCode')
@@ -34,10 +34,13 @@ for rec_i = 1:recnum
         plot((0:length(testingData(channel,xlim))-1)/samplerate,testingData(channel,xlim))
         xlabel('Time (s)')
         title(['Neurologger Channel ' num2str(channel)]);
+        set(gca,'ylim',[0 255])
     end
     
-    savefig(gcf,fullfile(outfilepath,['NeurologgerSignal_' NLname '_datacell' num2str(rec_i) '.fig']))
-    print(gcf,fullfile(outfilepath,['NeurologgerSignal_' NLname '_datacell' num2str(rec_i) '.png']),'-dpng')
+    if strcmpi(plotTF,'on')
+        savefig(gcf,fullfile(outfilepath,['NeurologgerSignal_' NLname '_datacell' num2str(rec_i) '.fig']))
+        print(gcf,fullfile(outfilepath,['NeurologgerSignal_' NLname '_datacell' num2str(rec_i) '.png']),'-dpng')
+    end
 end
 
 % 
