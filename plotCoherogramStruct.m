@@ -14,20 +14,25 @@ behfields = fields(coherogramStruct);
 nfield = length(behfields);
 
 %% check whether the coherogramStruct size
-% This is done to check if the struct was created with average or not
-tempData1 = coherogramStruct.(behfields{1}).C;
-tempDatadim1 = size(tempData1);
-tempData2 = coherogramStruct.(behfields{2}).C;
-tempDatadim2 = size(tempData2);
-tempData3 = coherogramStruct.(behfields{3}).C;
-tempDatadim3 = size(tempData3);
-if length(tempDatadim1) > 2
-    noaverage = 0;
-    nepochs1 = tempDatadim1(3);
-    nepochs2 = tempDatadim2(3);
-    nepochs3 = tempDatadim3(3);
+% check if there is only one behfields
+if nfield ~= 1
+    % This is done to check if the struct was created with average or not
+    tempData1 = coherogramStruct.(behfields{1}).C;
+    tempDatadim1 = size(tempData1);
+    tempData2 = coherogramStruct.(behfields{2}).C;
+    tempDatadim2 = size(tempData2);
+    tempData3 = coherogramStruct.(behfields{3}).C;
+    tempDatadim3 = size(tempData3);
+    if length(tempDatadim1) > 2
+        noaverage = 0;
+        nepochs1 = tempDatadim1(3);
+        nepochs2 = tempDatadim2(3);
+        nepochs3 = tempDatadim3(3);
+    else
+        noaverage = 1;
+    end
 else
-    noaverage = 1;
+    noaverage=1;
 end
 
 % repeat for each behavior (per field)

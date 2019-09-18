@@ -2,7 +2,7 @@
 
 %% default parameters
 durSecondsAnalysisWindow = 2; %seconds
-syncdetailfilename = 'SyncDetail'; % excel file with start/stop time of neurologger and video sync pulses
+% syncdetailfilename = 'SyncDetail'; % excel file with start/stop time of neurologger and video sync pulses
     % used in inCreateTimestampLogNL
 syncSystem = 'Arduino'; %default. Used inCreateTimestampLogNL
 % behavNames = {'mountingMale','huddlingFemale','huddlingMale','partnergroomingFemale','partnergroomingMale','sniffingFemale','sniffingMale','selfgroomingFemale','bitingFemale','approachFemale','approachMale','rearingFemale'};
@@ -411,142 +411,142 @@ coherogramStructNoMeanSTD_BLAPFC_noavg = coherogramStructPostProcessing(coherogr
 % 
 
 
-%% Step 15: Show coherence changing over time at PEAK COHER FREQ FOR MATING (intervals over course of experiment)
-
-% Key notes: For individual animals. Before run this part of code, must run
-% "Set up coherence analysis" for animal of interest.
-% Also note code below is set up to run 1s intervals
-
-clipBounds = [-127.5 127.5]; % from ConvertIndicesToChronuxFormat
-damStructTimelineNAcc = damNeil_NAcc;
-damStructTimelinePFC = damNeil_PFC;
-epochIndicesTimelineNAcc = epochIndices_Neil_NAcc;
-epochIndicesTimelinePFC = epochIndices_Neil_PFC;
-sampleIndicesTimelineNAcc = sampleIndices_Neil_NAcc;
-sampleIndicesTimelinePFC = sampleIndices_Neil_PFC;
-sampleRange = ExptRangeSamples_Neil;% from intervals above
-sampleMaleAdded = cohabRange(1);
-% for freq range: use peak mating integer frequency - be consistent with
-% other figures
-CMeans = coherogramStruct.mountingMale.CMean;
-
-% identify integer frequency range - from generatefigs_Joe_20150430
-if isequal(ceil(min(coherogramStruct.mountingMale.f)),min(coherogramStruct.mountingMale.f))
-    rangeFMin = min(coherogramStruct.mountingMale.f)+1;
-else
-    rangeFMin = ceil(min(coherogramStruct.mountingMale.f));
-end
-
-if isequal(floor(max(coherogramStruct.mountingMale.f)),max(coherogramStruct.mountingMale.f))
-    rangeFMax = max(coherogramStruct.mountingMale.f)-1;
-else
-    rangeFMax = floor(max(coherogramStruct.mountingMale.f));
-end
-
-rangeF = rangeFMin:rangeFMax; % specify frequency range -- want integer values (see below)
-fIDs = zeros(1,numel(rangeF));
-for z=1:numel(rangeF)
-    fID = find(coherogramStruct.mountingMale.f==rangeF(z)); % find indexes for integer-valued frequencies; padding of data to 32768 (2^15) allows us to select these
-    fIDs(z) = fID;
-end
-CMeansInt=CMeans(fIDs);
-[Cmax,IDmax] = max(CMeansInt);
-fForTimeline = rangeF(IDmax);
-
-
-
-%%  Step 16: Establish set of Chronux params to use in "timeline" coherence analysis (Depends on what behaviors interested in -- see below)
-
-% % Interested in mating, huddling, self-grooming behaviors for now; making sure that
-% % params are consistent across those
-% if isequal(paramsStruct.mountingMale,paramsStruct.huddlingFemale) && isequal(paramsStruct.mountingMale,paramsStruct.selfgroomingFemale)
-     params = paramsStruct.mountingMale;
+% %% Step 15: Show coherence changing over time at PEAK COHER FREQ FOR MATING (intervals over course of experiment)
+% 
+% % Key notes: For individual animals. Before run this part of code, must run
+% % "Set up coherence analysis" for animal of interest.
+% % Also note code below is set up to run 1s intervals
+% 
+% clipBounds = [-127.5 127.5]; % from ConvertIndicesToChronuxFormat
+% damStructTimelineNAcc = damNeil_NAcc;
+% damStructTimelinePFC = damNeil_PFC;
+% epochIndicesTimelineNAcc = epochIndices_Neil_NAcc;
+% epochIndicesTimelinePFC = epochIndices_Neil_PFC;
+% sampleIndicesTimelineNAcc = sampleIndices_Neil_NAcc;
+% sampleIndicesTimelinePFC = sampleIndices_Neil_PFC;
+% sampleRange = ExptRangeSamples_Neil;% from intervals above
+% sampleMaleAdded = cohabRange(1);
+% % for freq range: use peak mating integer frequency - be consistent with
+% % other figures
+% CMeans = coherogramStruct.mountingMale.CMean;
+% 
+% % identify integer frequency range - from generatefigs_Joe_20150430
+% if isequal(ceil(min(coherogramStruct.mountingMale.f)),min(coherogramStruct.mountingMale.f))
+%     rangeFMin = min(coherogramStruct.mountingMale.f)+1;
 % else
-%     error('params not same between behaviors')
-% end
-
-movingwin_mountingMale = movingwinStruct.mountingMale;
-% movingwin_selfgroomingFemale = movingwinStruct.selfgroomingFemale;
-% movingwin_huddlingFemale = movingwinStruct.huddlingFemale;
-% if isequal(movingwin_mountingMale(1),movingwin_selfgroomingFemale(1)) && isequal(movingwin_mountingMale(1),movingwin_huddlingFemale(1))
-     tTimelineWindowSeconds = movingwin_mountingMale(1);
-% else
-%     error('time interval not same between behaviors')
+%     rangeFMin = ceil(min(coherogramStruct.mountingMale.f));
 % end
 % 
-% if isequal(movingwin_mountingMale(2),movingwin_selfgroomingFemale(2)) && isequal(movingwin_mountingMale(2),movingwin_huddlingFemale(2))
-     tstepSeconds = movingwin_mountingMale(2);
+% if isequal(floor(max(coherogramStruct.mountingMale.f)),max(coherogramStruct.mountingMale.f))
+%     rangeFMax = max(coherogramStruct.mountingMale.f)-1;
 % else
-%     error('time step not same between behaviors')
+%     rangeFMax = floor(max(coherogramStruct.mountingMale.f));
 % end
-
-
-%% Step 17: Compute coherence over 1 second intervals throughout experiment
-
-startIntervalSample = sampleRange(1); % first interval starts at sampleRange(1)
-
-durationWindowSample = round(tTimelineWindowSeconds*samplerate); % same as cohgramc code and granger causality analysis
-durationStepSample = round(tstepSeconds*samplerate); % same as cohgramc code and granger causality analysis
-
-endIntervalSample = sampleRange(1)+durationWindowSample-1; % ending sample of first interval; -1 to include startIntervalSample
-timesAndCMeans = [];
-timesAndS1Means = [];
-timesAndS2Means = [];
-timesAndCMeansNoTransform = [];
-timesAndS1MeansNoTransform = [];
-timesAndS2MeansNoTransform = [];
-%S1Cell = {};
-%S2Cell = {};
-%fMat = [];
-%CCell = {};
-%percentMove = [];
-
-%numTapersMat = params.tapers;
-%numTapers = numTapersMat(2); % how params.tapers is defined: second value is number of tapers
-%df = 2*1*numTapers; % 2*numTrials*numTapers; here considering one trial as a window of time
-while endIntervalSample<=sampleRange(1,2); % while end of interval is still within the sampleRange; <= because sampleRange(1,2) is often end of experimental session (e.g. cohabitation), which is defined as inclusive
-    NAccData = damStructTimelineNAcc.trials.signal(startIntervalSample:endIntervalSample);
-    %numel(NAccData)
-    PFCData = damStructTimelinePFC.trials.signal(startIntervalSample:endIntervalSample);
-    %[startIntervalSample endIntervalSample endIntervalSample-startIntervalSample]
-    % Compute coherence only for data segments without clipping, otherwise coherence is set to be NaN; code from
-    % ConvertIndicesToChronuxFormat.m
-    if ~isempty(find(NAccData==clipBounds(1),1)) || ~isempty(find(NAccData==clipBounds(2),1))|| ~isempty(find(PFCData==clipBounds(1),1))|| ~isempty(find(PFCData==clipBounds(2),1))
-        CValIncNoTransform = NaN;
-        S1ValIncNoTransform = NaN;
-        S2ValIncNoTransform = NaN;
-        CValInc = NaN;
-        S1ValInc = NaN;
-        S2ValInc = NaN;
-        %percentMoveVal = NaN;
-    else
-        [C,phi,S12,S1,S2,f,confC,phistd,Cerr]=coherencyc(NAccData',PFCData',params);
-        % compute average C in theta band
-        fTimelineID = find(f==fForTimeline);
-        if numel(fTimelineID)>1
-            error('should be selecting just one freq id')
-        end
-        CValIncNoTransform = C(fTimelineID);
-        S1ValIncNoTransform = S1(fTimelineID);
-        S2ValIncNoTransform = S2(fTimelineID);
-        CValInc = atanh(C(fTimelineID)); % Fisher transform; note no bias correction here
-        S1ValInc = 10*(log10(S1(fTimelineID))); % log transformed X10 bel-->decibel; note no bias correction here
-        S2ValInc = 10*(log10(S2(fTimelineID))); % log transformed X10 bel-->decibel; note no bias correction here
-        % for additional analysis by LA 6/23/2014
-        %S1Cell = [S1Cell S1];
-        %S2Cell = [S2Cell S2];
-        %         if isempty(fMat)
-        %             fMat = f;
-        %         end
-    end
-    timesAndCMeansNoTransform = [timesAndCMeansNoTransform;startIntervalSample CValIncNoTransform];
-    timesAndS1MeansNoTransform = [timesAndS1MeansNoTransform;startIntervalSample S1ValIncNoTransform];
-    timesAndS2MeansNoTransform = [timesAndS2MeansNoTransform;startIntervalSample S2ValIncNoTransform];
-    timesAndCMeans = [timesAndCMeans;startIntervalSample CValInc]; % keep updating this in each cycle of while loop
-    timesAndS1Means = [timesAndS1Means;startIntervalSample S1ValInc];
-    timesAndS2Means = [timesAndS2Means;startIntervalSample S2ValInc];
-    %percentMove = [percentMove;percentMoveVal];
-    % update interval
-    startIntervalSample = startIntervalSample+durationStepSample;% using stepped windows
-    endIntervalSample = startIntervalSample+durationWindowSample-1; %-1 to include startIntervalSample in interval
-end
+% 
+% rangeF = rangeFMin:rangeFMax; % specify frequency range -- want integer values (see below)
+% fIDs = zeros(1,numel(rangeF));
+% for z=1:numel(rangeF)
+%     fID = find(coherogramStruct.mountingMale.f==rangeF(z)); % find indexes for integer-valued frequencies; padding of data to 32768 (2^15) allows us to select these
+%     fIDs(z) = fID;
+% end
+% CMeansInt=CMeans(fIDs);
+% [Cmax,IDmax] = max(CMeansInt);
+% fForTimeline = rangeF(IDmax);
+% 
+% 
+% 
+% %%  Step 16: Establish set of Chronux params to use in "timeline" coherence analysis (Depends on what behaviors interested in -- see below)
+% 
+% % % Interested in mating, huddling, self-grooming behaviors for now; making sure that
+% % % params are consistent across those
+% % if isequal(paramsStruct.mountingMale,paramsStruct.huddlingFemale) && isequal(paramsStruct.mountingMale,paramsStruct.selfgroomingFemale)
+%      params = paramsStruct.mountingMale;
+% % else
+% %     error('params not same between behaviors')
+% % end
+% 
+% movingwin_mountingMale = movingwinStruct.mountingMale;
+% % movingwin_selfgroomingFemale = movingwinStruct.selfgroomingFemale;
+% % movingwin_huddlingFemale = movingwinStruct.huddlingFemale;
+% % if isequal(movingwin_mountingMale(1),movingwin_selfgroomingFemale(1)) && isequal(movingwin_mountingMale(1),movingwin_huddlingFemale(1))
+%      tTimelineWindowSeconds = movingwin_mountingMale(1);
+% % else
+% %     error('time interval not same between behaviors')
+% % end
+% % 
+% % if isequal(movingwin_mountingMale(2),movingwin_selfgroomingFemale(2)) && isequal(movingwin_mountingMale(2),movingwin_huddlingFemale(2))
+%      tstepSeconds = movingwin_mountingMale(2);
+% % else
+% %     error('time step not same between behaviors')
+% % end
+% 
+% 
+% %% Step 17: Compute coherence over 1 second intervals throughout experiment
+% 
+% startIntervalSample = sampleRange(1); % first interval starts at sampleRange(1)
+% 
+% durationWindowSample = round(tTimelineWindowSeconds*samplerate); % same as cohgramc code and granger causality analysis
+% durationStepSample = round(tstepSeconds*samplerate); % same as cohgramc code and granger causality analysis
+% 
+% endIntervalSample = sampleRange(1)+durationWindowSample-1; % ending sample of first interval; -1 to include startIntervalSample
+% timesAndCMeans = [];
+% timesAndS1Means = [];
+% timesAndS2Means = [];
+% timesAndCMeansNoTransform = [];
+% timesAndS1MeansNoTransform = [];
+% timesAndS2MeansNoTransform = [];
+% %S1Cell = {};
+% %S2Cell = {};
+% %fMat = [];
+% %CCell = {};
+% %percentMove = [];
+% 
+% %numTapersMat = params.tapers;
+% %numTapers = numTapersMat(2); % how params.tapers is defined: second value is number of tapers
+% %df = 2*1*numTapers; % 2*numTrials*numTapers; here considering one trial as a window of time
+% while endIntervalSample<=sampleRange(1,2); % while end of interval is still within the sampleRange; <= because sampleRange(1,2) is often end of experimental session (e.g. cohabitation), which is defined as inclusive
+%     NAccData = damStructTimelineNAcc.trials.signal(startIntervalSample:endIntervalSample);
+%     %numel(NAccData)
+%     PFCData = damStructTimelinePFC.trials.signal(startIntervalSample:endIntervalSample);
+%     %[startIntervalSample endIntervalSample endIntervalSample-startIntervalSample]
+%     % Compute coherence only for data segments without clipping, otherwise coherence is set to be NaN; code from
+%     % ConvertIndicesToChronuxFormat.m
+%     if ~isempty(find(NAccData==clipBounds(1),1)) || ~isempty(find(NAccData==clipBounds(2),1))|| ~isempty(find(PFCData==clipBounds(1),1))|| ~isempty(find(PFCData==clipBounds(2),1))
+%         CValIncNoTransform = NaN;
+%         S1ValIncNoTransform = NaN;
+%         S2ValIncNoTransform = NaN;
+%         CValInc = NaN;
+%         S1ValInc = NaN;
+%         S2ValInc = NaN;
+%         %percentMoveVal = NaN;
+%     else
+%         [C,phi,S12,S1,S2,f,confC,phistd,Cerr]=coherencyc(NAccData',PFCData',params);
+%         % compute average C in theta band
+%         fTimelineID = find(f==fForTimeline);
+%         if numel(fTimelineID)>1
+%             error('should be selecting just one freq id')
+%         end
+%         CValIncNoTransform = C(fTimelineID);
+%         S1ValIncNoTransform = S1(fTimelineID);
+%         S2ValIncNoTransform = S2(fTimelineID);
+%         CValInc = atanh(C(fTimelineID)); % Fisher transform; note no bias correction here
+%         S1ValInc = 10*(log10(S1(fTimelineID))); % log transformed X10 bel-->decibel; note no bias correction here
+%         S2ValInc = 10*(log10(S2(fTimelineID))); % log transformed X10 bel-->decibel; note no bias correction here
+%         % for additional analysis by LA 6/23/2014
+%         %S1Cell = [S1Cell S1];
+%         %S2Cell = [S2Cell S2];
+%         %         if isempty(fMat)
+%         %             fMat = f;
+%         %         end
+%     end
+%     timesAndCMeansNoTransform = [timesAndCMeansNoTransform;startIntervalSample CValIncNoTransform];
+%     timesAndS1MeansNoTransform = [timesAndS1MeansNoTransform;startIntervalSample S1ValIncNoTransform];
+%     timesAndS2MeansNoTransform = [timesAndS2MeansNoTransform;startIntervalSample S2ValIncNoTransform];
+%     timesAndCMeans = [timesAndCMeans;startIntervalSample CValInc]; % keep updating this in each cycle of while loop
+%     timesAndS1Means = [timesAndS1Means;startIntervalSample S1ValInc];
+%     timesAndS2Means = [timesAndS2Means;startIntervalSample S2ValInc];
+%     %percentMove = [percentMove;percentMoveVal];
+%     % update interval
+%     startIntervalSample = startIntervalSample+durationStepSample;% using stepped windows
+%     endIntervalSample = startIntervalSample+durationWindowSample-1; %-1 to include startIntervalSample in interval
+% end

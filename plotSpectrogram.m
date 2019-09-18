@@ -17,10 +17,13 @@ saveFig = 'on';
 clim = [5 30]; 
 % outfilepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\spectogramAnalysis';
 outfilepath = cd;
+channel = 'PFC';
+overlayBehavior = 'off'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 assign(varargin{:})
-x_ds = damStruct.trials.signal;
+% x_ds = damStruct.trials.signal;
+x_ds = damStruct.signal.(channel);
 
 [spec,f,t] = spectrogram(x_ds,window,overlap,[],fs);
 
@@ -41,7 +44,9 @@ ylabel(cb, 'Power spectral density (dB/Hz)');
 hold on;
 
 %% overlay the behavior times
-overlayBehavior(damStruct,behavior)
+if strcmp(overlayBehavior,'on')
+    overlayBehavior(damStruct,behavior)
+end
 % commented below out for pre-behavior scoring analysis
 
 % beh = unique(behaviorStruct.Behaviors);
