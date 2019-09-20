@@ -33,31 +33,69 @@ for i = 2:r
         activeperiodstop = indrecfile{activeperiodstopcol};
         fullfilename = fullfile(indrecfile(datafoldercol),indrecfile(rawfilenamecol));
         load(fullfilename{1})
-        datachan = ['chan' num2str(chancol)];
+        datachan = ['chan' num2str(indrecfile{chancol})];
         eval(['data = ' datachan ';'])
         activedata = data(activeperiodstart:activeperiodstop);
         
-        % run pwelch 
-        [pxx_temp,f_temp] = pwelch(activedata,500,250,1000,samplerate);
-        pxxall{fcount} = pxx_temp;
-        fall{fcount} = f_temp;
+        % identify periods without clipping
+        noclipi = activedata > 0 & activedata < 255;
+        M = movmean(noclipi,round(samplerate));
+        Mi = find(M == 1);
+        micount = 1;
+        pxxall = [];
+        f = [];
+        previousi = 1;
+        if ~isempty(Mi)
+            for j = 1:length(Mi)
+                curi = Mi(j);
+                if curi > previousi+199
+                    if curi > 100 && curi < (length(activedata)-99)
+                        activedata_temp = activedata(curi-100:curi+99);
+                        [pxx_temp,f] = pwelch(activedata_temp,200,0,200,samplerate);
+                        pxxall(micount,:) = pxx_temp;
+                        % fall(j,:) = f_temp;
+                        micount = micount+1;
+                    end
+                end
+                % store curi to skip over the period that has already been
+                % analyzed. This is done to skip the overlap.
+                previousi = curi;
+            end
+        end
+        % save the PSD for no clipping periods
+        poweroutfilename = [animalID '_' experiment '_NoClippingPSD'];
+        save(fullfile(outpath,poweroutfilename),'pxxall','f');
+        
+        pxx = mean(pxxall);
+
+%           This was commented out because it included clipping periods. Above for loop will replace this        
+%         % run pwelch 
+%         [pxx_temp,f_temp] = pwelch(activedata,500,250,1000,samplerate);
+%         pxxall{fcount} = pxx_temp;
+%         fall{fcount} = f_temp;
         
         % get average power for frequency bands
-        thetamean(fcount) = mean(pxx_temp(f_temp >= 4 & f_temp <12));
-        betamean(fcount) = mean(pxx_temp(f_temp >= 12 & f_temp <30));
-        lgammamean(fcount) = mean(pxx_temp(f_temp >= 30 & f_temp <58));
-        hgammamean(fcount) = mean(pxx_temp(f_temp >= 62 & f_temp <100));
+        thetamean(fcount) = mean(pxx(f >= 4 & f <12));
+        betamean(fcount) = mean(pxx(f >= 12 & f <30));
+        lgammamean(fcount) = mean(pxx(f >= 30 & f <58));
+        hgammamean(fcount) = mean(pxx(f >= 62 & f <100));
         
         % plot power spectrum
         if strcmp(savefigures,'on')
-            figure; pwelch(activedata,500,250,1000,samplerate)
-            title([animalID experiment recordingSite])
-            outfilename = [animalID '_' experiment '_' recordingSite '_Pwelch'];
-            savefig(fullfile(outpath,outfilename))
-            print(fullfile(outpath,outfilename),'-dpng')
-            close(gcf)
+            if ~isnan(pxx)
+                % figure; pwelch(activedata,500,250,1000,samplerate)
+                figure; plot(f,10*log10(pxx))
+                xlabel('Frequency (Hz)')
+                ylabel('Power/frequncy (dB/Hz)')
+                title([animalID experiment recordingSite])
+                outfilename = [animalID '_' experiment '_' recordingSite '_Pwelch'];
+                savefig(fullfile(outpath,outfilename))
+                print(fullfile(outpath,outfilename),'-dpng')
+                close(gcf)
+            end
         end
         fcount = fcount+1;
+        clear pxxall;
     end
 end
 
@@ -92,7 +130,8 @@ habit2ToCohabhgamma = habit2hgamma - cohabhgamma;
 %% plot the figures
 %%%%%%%%% important %%%%%%%%%%% based on animal treatment group. put it in
 %%%%%%%%% the excel sheet in future.
-otai = logical([1 0 0 0 1 1 0 1]);
+keyboard
+otai = logical([1 0 0 1 1 0 1]);
 
 % theta
 OTAdata = habit1ToCohabtheta(otai);
