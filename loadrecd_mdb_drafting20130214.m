@@ -53,6 +53,7 @@ animstruct = mdb.anim(logical(ismember({mdb.anim.Animal},exptstruct.Animal)));
 % Determine if file is a brainware file
 outparam = 1;
 switch lower(recdstruct.Software)
+    %% bw case
     case 'bw',
         % Brainware
         pathname = win2unix(fullfile(datadir,...
@@ -149,7 +150,7 @@ switch lower(recdstruct.Software)
                     varargout{outparam}.despiked = true;
             end
         end
-        
+        %% nl case
     case 'nl' % Added by EA Spring 2013
         % datadir='F:\Experiments';
         datadir='G:\Experiments'; % JK edit 042018 % if there is an error in this file, most likely it cannot find the original raw file. Uncomment the below lines in that case.

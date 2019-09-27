@@ -3,12 +3,12 @@
 % video location & LED location
 % filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Franz\Videos\Habituation1';
 % filename = '2018-09-20 18_39_02.avi';
-filepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\Neil'
-filename = 'Habituation2_and_Cohab_Neil_113018.avi';
+filepath = 'C:\Users\ykwon36\Dropbox\Jim\OTmanipEphysExpt\Videos\Habituation2_And_Cohab'
+filename = 'T_Habituation2AndCohab.avi';
 % LEDpos = [213+23,541+21];
 % LEDpos = [183, 183];
 % LEDpos = [409,27]; % LA sample pipeline video. JK 122918
-LEDpos = [181,182]; %for Neil Cohab. JK
+LEDpos = [296,525]; %for Neil Cohab. JK
 rbgChan = 1; % RBG in channel 123 respectively
 
 % set up the video object
