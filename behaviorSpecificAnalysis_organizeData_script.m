@@ -6,13 +6,13 @@ durSecondsAnalysisWindow = 1; %seconds
     % used in inCreateTimestampLogNL
 syncSystem = 'Arduino'; %default. Used inCreateTimestampLogNL
 % behavNames = {'mountingMale','huddlingFemale','huddlingMale','partnergroomingFemale','partnergroomingMale','sniffingFemale','sniffingMale','selfgroomingFemale','bitingFemale','approachFemale','approachMale','rearingFemale'};
-behavNames = {'approachMale'}; % check if this can be obtained from the 
+behavNames = {'sniffingMale'}; % check if this can be obtained from the 
     % excel file or from the scoring iteration file
-
+animalID = 'T';
 %% step 1: set appropriate paths
 initializePath
 
-currDir = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\T';
+currDir = ['R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\Experiments_NL\' animalID];
 curPath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\LizAnnPipeLineExample\';
 databasepath = 'R:\LiuLab\People\Jim\Experiments\OTmanipEphysExpt\MasterDBVole.xls';
 
@@ -32,11 +32,11 @@ timestamplogfilename = 'timestamplog.xlsx';
 Chronux_startup
 
 %% step 2: get neural and behavioral data
-recd_DC = getrecd_mdb('LFP',mdb,{'Animal','Scorer'},{{'T'},{'DC'}},'NeuralBehav','both');
+recd_DC = getrecd_mdb('LFP',mdb,{'Animal','Scorer'},{{animalID},{'JK'}},'NeuralBehav','both');
 % recdNeil_Nacc_DS = recd_DC(1);
 % recdNeil_PFC_DS = recd_DC(2);
 recdNeil_PFC_DS = recd_DC(1);
-samplerate = recdNeil_Nacc_DS.Samplerate;
+samplerate = recdNeil_PFC_DS.Samplerate;
 
 %% step 4: get raw data
 
@@ -45,7 +45,7 @@ damNeil_PFC_DS = loadrecd_mdb_drafting20130214(recdNeil_PFC_DS,mdb);
 % script to plot behavior specific analysis
 
 data = damNeil_PFC_DS.trials.signal;
-behbox = damNeil_PFC_DS.trials.behavindices.approachMale;
+behbox = damNeil_PFC_DS.trials.behavindices.sniffingMale;
 
 [r,c] = size(behbox);
 
